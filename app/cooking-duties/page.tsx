@@ -18,6 +18,8 @@ const mockDuties: DutyAssignment[] = [
   { date: new Date(2025, 5, 17), studentId: '2', studentName: 'Priya Sharma', room: '102', status: 'completed' },
   { date: new Date(2025, 5, 18), studentId: '3', studentName: 'Amit Patel', room: '103', status: 'pending' },
   { date: new Date(2025, 5, 19), studentId: '4', studentName: 'Neha Singh', room: '104', status: 'swapped' },
+  { date: new Date(2025, 5, 20), studentId: '1', studentName: 'Rahul Kumar', room: '101', status: 'pending' },
+  { date: new Date(2025, 5, 21), studentId: '2', studentName: 'Priya Sharma', room: '102', status: 'pending' },
 ]
 
 export default function CookingDutiesPage() {
@@ -27,14 +29,25 @@ export default function CookingDutiesPage() {
   const [showReassignModal, setShowReassignModal] = useState(false)
   const [selectedDuty, setSelectedDuty] = useState<DutyAssignment | null>(null)
 
+  const getDaysInMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
+  const getFirstDayOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay()
+
   const handlePrevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))
   const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))
 
   const monthName = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
+  const getDutyForDate = (day: number) => {
+    return duties.find(d => d.date.getDate() === day && d.date.getMonth() === currentDate.getMonth() && d.date.getFullYear() === currentDate.getFullYear())
+  }
+
   const updateStatus = (date: Date, status: 'pending' | 'completed' | 'swapped') => {
     setDuties(duties.map(d => d.date === date ? { ...d, status } : d))
   }
+
+  const daysInMonth = getDaysInMonth(currentDate)
+  const firstDay = getFirstDayOfMonth(currentDate)
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1)
 
   return (
     <PageContainer title="Cooking Duties">
@@ -56,62 +69,54 @@ export default function CookingDutiesPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#E5E7EB] dark:border-[#374151]">
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] dark:text-white">Date</th>
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] dark:text-white">Student</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Room</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Status</th>
-                {currentRole === 'MAINTAINER' && (
-                  <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {duties.map((duty, idx) => (
-                <tr key={idx} className="border-b border-[#E5E7EB] dark:border-[#374151] hover:bg-[#F5F7FA] dark:hover:bg-[#374151]">
-                  <td className="py-3 px-4 text-[#111827] dark:text-white">{duty.date.toLocaleDateString()}</td>
-                  <td className="py-3 px-4 text-[#111827] dark:text-white">{duty.studentName}</td>
-                  <td className="py-3 px-4 text-center text-[#6B7280] dark:text-[#9CA3AF]">{duty.room}</td>
-                  <td className="py-3 px-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      duty.status === 'completed'
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : duty.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                        : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                    }`}>
-                      {duty.status.charAt(0).toUpperCase() + duty.status.slice(1)}
-                    </span>
-                  </td>
-                  {currentRole === 'MAINTAINER' && (
-                    <td className="py-3 px-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => {
-                            setSelectedDuty(duty)
-                            setShowReassignModal(true)
-                          }}
-                          className="p-1 hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded"
-                          title="Reassign Duty"
-                        >
-                          <Edit2 size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+        <div className="grid grid-cols-7 gap-2 mb-6">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+            <div key={d} className="text-center text-xs font-semibold text-[#6B7280] dark:text-[#9CA3AF] py-2">
+              {d}
+            </div>
+          ))}
+          {Array(firstDay).fill(null).map((_, i) => (
+            <div key={`empty-${i}`} />
+          ))}
+          {days.map(day => {
+            const duty = getDutyForDate(day)
+            return (
+              <div key={day} className="bg-[#F5F7FA] dark:bg-[#374151] rounded-lg p-3 min-h-24 flex flex-col">
+                <p className="font-bold text-[#111827] dark:text-white text-sm mb-2">{day}</p>
+                {duty ? (
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-[#111827] dark:text-white truncate">{duty.studentName}</p>
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Room {duty.room}</p>
+                    </div>
+                    <div className="mt-2">
+                      <span className={`text-xs font-medium px-2 py-1 rounded inline-block ${
+                        duty.status === 'completed'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : duty.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                          : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                      }`}>
+                        {duty.status === 'completed' ? 'Done' : duty.status === 'pending' ? 'Pending' : 'Swapped'}
+                      </span>
+                    </div>
+                    {currentRole === 'MAINTAINER' && (
+                      <div className="mt-2 flex gap-1">
+                        <button className="p-1 hover:bg-[#E5E7EB] dark:hover:bg-[#1F2937] rounded text-xs" title="Reassign">
+                          <Edit2 size={12} className="text-[#6B7280]" />
                         </button>
-                        <button
-                          className="p-1 hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded"
-                          title="Swap Duty"
-                        >
-                          <Copy size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+                        <button className="p-1 hover:bg-[#E5E7EB] dark:hover:bg-[#1F2937] rounded text-xs" title="Swap">
+                          <Copy size={12} className="text-[#6B7280]" />
                         </button>
                       </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-xs text-[#9CA3AF]">Unassigned</p>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </PageContainer>

@@ -35,6 +35,8 @@ export default function AttendancePage() {
 
   const handlePrevMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))
   const handleNextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))
+  const handleMonthChange = (month: number) => setCurrentDate(new Date(currentDate.getFullYear(), month, 1))
+  const handleYearChange = (year: number) => setCurrentDate(new Date(year, currentDate.getMonth(), 1))
 
   const updateAttendance = (studentId: string, day: number, status: 'present' | 'absent' | null) => {
     const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${day}`
@@ -178,6 +180,36 @@ export default function AttendancePage() {
 
   return (
     <PageContainer title="Attendance Management">
+      <div className="mb-6 bg-white dark:bg-[#1F2937] rounded-3xl p-6 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
+        <div className="flex flex-wrap items-center gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-[#111827] dark:text-white mb-2">Month</label>
+            <select
+              value={currentDate.getMonth()}
+              onChange={(e) => handleMonthChange(parseInt(e.target.value))}
+              className="p-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#1F2937] text-[#111827] dark:text-white"
+            >
+              {['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((month, idx) => (
+                <option key={idx} value={idx}>{month}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-[#111827] dark:text-white mb-2">Year</label>
+            <select
+              value={currentDate.getFullYear()}
+              onChange={(e) => handleYearChange(parseInt(e.target.value))}
+              className="p-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#1F2937] text-[#111827] dark:text-white"
+            >
+              {[2024, 2025, 2026].map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white dark:bg-[#1F2937] rounded-3xl p-8 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
           <div className="flex items-center justify-between mb-6">
