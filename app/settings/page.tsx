@@ -2,18 +2,14 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { useTheme } from '@/lib/theme-context'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { Header } from '@/components/layout/Header'
-import { Sidebar } from '@/components/layout/Sidebar'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { User, Lock, Building2, Moon, Sun, Mail, Phone, MapPin } from 'lucide-react'
+import { User, Lock, Building2, Mail, Phone, MapPin } from 'lucide-react'
 
-type SettingsTab = 'profile' | 'hostel' | 'theme' | 'account'
+type SettingsTab = 'profile' | 'hostel' | 'account'
 
 function SettingsContent() {
   const { currentUser } = useAuth()
-  const { isDarkMode, toggleTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile')
   const [isSaving, setIsSaving] = useState(false)
   const [profileData, setProfileData] = useState({
@@ -30,11 +26,7 @@ function SettingsContent() {
   }
 
   return (
-    <div className="flex h-screen bg-white dark:bg-[#111827]">
-      <Sidebar />
-      <div className="flex-1 flex flex-col ml-64 md:ml-0">
-        <Header />
-        <PageContainer>
+    <PageContainer title="Settings">
           <div className="max-w-4xl">
             {/* Header */}
             <div className="mb-8">
@@ -74,19 +66,7 @@ function SettingsContent() {
                   Hostel
                 </div>
               </button>
-              <button
-                onClick={() => setActiveTab('theme')}
-                className={`px-4 py-3 font-medium border-b-2 transition-colors ${
-                  activeTab === 'theme'
-                    ? 'border-[#F7B538] text-[#F7B538]'
-                    : 'border-transparent text-[#6B7280] dark:text-[#9CA3AF] hover:text-[#111827] dark:hover:text-white'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
-                  Theme
-                </div>
-              </button>
+
               <button
                 onClick={() => setActiveTab('account')}
                 className={`px-4 py-3 font-medium border-b-2 transition-colors ${
@@ -272,63 +252,6 @@ function SettingsContent() {
             )}
 
             {/* Theme Tab */}
-            {activeTab === 'theme' && (
-              <div className="bg-white dark:bg-[#1F2937] rounded-lg border border-[#E5E7EB] dark:border-[#374151] p-6">
-                <h2 className="text-xl font-bold text-[#111827] dark:text-white mb-6">
-                  Appearance
-                </h2>
-
-                <div className="space-y-6">
-                  <p className="text-[#6B7280] dark:text-[#9CA3AF]">
-                    Choose how HostelHub looks on your device.
-                  </p>
-
-                  {/* Theme Options */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Light Theme */}
-                    <button
-                      onClick={() => {
-                        if (isDarkMode) toggleTheme()
-                      }}
-                      className={`p-6 rounded-lg border-2 transition-all ${
-                        !isDarkMode
-                          ? 'border-[#F7B538] bg-[#F5F7FA] dark:bg-[#374151]'
-                          : 'border-[#E5E7EB] dark:border-[#374151] hover:border-[#F7B538]'
-                      }`}
-                    >
-                      <Sun size={28} className="text-[#F59E0B] mb-2" />
-                      <p className="font-semibold text-[#111827] dark:text-white">
-                        Light
-                      </p>
-                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-                        Clean and bright
-                      </p>
-                    </button>
-
-                    {/* Dark Theme */}
-                    <button
-                      onClick={() => {
-                        if (!isDarkMode) toggleTheme()
-                      }}
-                      className={`p-6 rounded-lg border-2 transition-all ${
-                        isDarkMode
-                          ? 'border-[#F7B538] bg-[#374151]'
-                          : 'border-[#E5E7EB] hover:border-[#F7B538]'
-                      }`}
-                    >
-                      <Moon size={28} className="text-blue-400 mb-2" />
-                      <p className="font-semibold text-[#111827] dark:text-white">
-                        Dark
-                      </p>
-                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-                        Easy on the eyes
-                      </p>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Account Tab */}
             {activeTab === 'account' && (
               <div className="bg-white dark:bg-[#1F2937] rounded-lg border border-[#E5E7EB] dark:border-[#374151] p-6">
@@ -397,10 +320,8 @@ function SettingsContent() {
                 </div>
               </div>
             )}
-          </div>
-        </PageContainer>
       </div>
-    </div>
+    </PageContainer>
   )
 }
 

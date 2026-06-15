@@ -3,8 +3,6 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { useFund } from '@/lib/fund-context'
-import { useNotifications } from '@/lib/notifications-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { StatsCard } from '@/components/cards/StatsCard'
 import {
@@ -14,7 +12,6 @@ import {
   AlertCircle,
   Calendar,
   TrendingUp,
-  ClipboardList,
 } from 'lucide-react'
 import {
   dashboardStats,
@@ -26,11 +23,6 @@ import {
 export default function Dashboard() {
   const router = useRouter()
   const { currentUser, currentRole, isLoading } = useAuth()
-  const { fundData } = useFund()
-  const { notifications } = useNotifications()
-  
-  const pendingRequests = notifications.filter((n) => n.type === 'student_request')
-  const pendingRequestsCount = pendingRequests.length
 
   useEffect(() => {
     if (!isLoading && !currentUser) {
@@ -144,7 +136,7 @@ export default function Dashboard() {
     },
     {
       title: 'Current Fund',
-      value: `₹${fundData.currentBalance.toLocaleString()}`,
+      value: `₹${dashboardStats.currentFund.toLocaleString()}`,
       icon: Banknote,
       trend: { direction: 'up' as const, percentage: 8 },
     },
@@ -155,8 +147,8 @@ export default function Dashboard() {
       trend: { direction: 'up' as const, percentage: 2 },
     },
     {
-      title: 'Expenses This Month',
-      value: `₹${fundData.expensesTotal.toLocaleString()}`,
+      title: 'Pending Duties',
+      value: dashboardStats.pendingDuties,
       icon: AlertCircle,
       trend: { direction: 'down' as const, percentage: 3 },
     },
@@ -170,26 +162,6 @@ export default function Dashboard() {
           <StatsCard key={index} {...stat} />
         ))}
       </div>
-
-      {/* Pending Requests Card */}
-      {pendingRequestsCount > 0 && (
-        <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 shadow-sm border border-[#E5E7EB] dark:border-[#374151] mb-10 cursor-pointer hover:shadow-md hover:border-[#F7B538] dark:hover:border-[#F7B538] transition-all">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <ClipboardList className="text-blue-600 dark:text-blue-400" size={24} />
-              </div>
-              <div>
-                <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Pending Requests</p>
-                <p className="text-2xl font-bold text-[#111827] dark:text-white">{pendingRequestsCount}</p>
-              </div>
-            </div>
-            <span className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline">
-              View All →
-            </span>
-          </div>
-        </div>
-      )}
 
       {/* Charts and Activity Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">

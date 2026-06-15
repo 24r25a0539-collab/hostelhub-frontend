@@ -2,11 +2,17 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { useFund } from '@/lib/fund-context'
-import { useNotifications } from '@/lib/notifications-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { Plus, Upload, X, Download, Trash2 } from 'lucide-react'
+import { Plus, Upload, X, Trash2 } from 'lucide-react'
+
+interface Expense {
+  id: string
+  category: string
+  amount: number
+  description: string
+  date: string
+}
 
 const CATEGORIES = [
   'Groceries',
@@ -21,10 +27,33 @@ const CATEGORIES = [
   'Miscellaneous',
 ]
 
+const mockExpenses: Expense[] = [
+  {
+    id: '1',
+    category: 'Groceries',
+    amount: 5000,
+    description: 'Weekly grocery shopping',
+    date: '2026-06-10',
+  },
+  {
+    id: '2',
+    category: 'Electricity',
+    amount: 2500,
+    description: 'Monthly electricity bill',
+    date: '2026-06-08',
+  },
+  {
+    id: '3',
+    category: 'Maintenance',
+    amount: 1500,
+    description: 'Pipe repair in common area',
+    date: '2026-06-05',
+  },
+]
+
 export default function ExpensesPage() {
   const { currentRole } = useAuth()
-  const { fundData, addExpense: addFundExpense, deleteExpense: deleteFundExpense } = useFund()
-  const { addNotification } = useNotifications()
+  const [expenses, setExpenses] = useState<Expense[]>(mockExpenses)
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [toast, setToast] = useState('')
   
@@ -34,6 +63,8 @@ export default function ExpensesPage() {
     description: '',
   })
   const [uploadedFile, setUploadedFile] = useState<{ name: string; uploadedDate: string } | null>(null)
+
+  const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0)
 
   const handleAddExpense = () => {
     if (currentRole !== 'MAINTAINER') {
@@ -47,21 +78,15 @@ export default function ExpensesPage() {
       return
     }
 
-    const amount = parseFloat(formData.amount)
-    addFundExpense({
+    const newExpense: Expense = {
+      id: Math.random().toString(),
       category: formData.category,
-      amount: amount,
+      amount: parseFloat(formData.amount),
       description: formData.description,
-    })
+      date: new Date().toISOString().split('T')[0],
+    }
 
-    // Add notification
-    addNotification({
-      type: 'expense_added',
-      title: 'Expense Added',
-      message: `${formData.category} expense of ₹${amount} has been added`,
-      priority: 'normal',
-    })
-
+    setExpenses([newExpense, ...expenses])
     setFormData({ category: '', amount: '', description: '' })
     setUploadedFile(null)
     setShowAddDialog(false)
@@ -88,7 +113,7 @@ export default function ExpensesPage() {
       setTimeout(() => setToast(''), 3000)
       return
     }
-    deleteFundExpense(id)
+    setExpenses(expenses.filter(e => e.id !== id))
   }
 
   return (
@@ -98,16 +123,16 @@ export default function ExpensesPage() {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Current Fund</p>
-              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{fundData.currentBalance.toLocaleString()}</p>
-            </div>
-            <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
               <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Total Expenses</p>
-              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{fundData.expensesTotal.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{totalExpenses.toLocaleString()}</p>
             </div>
             <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
               <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Total Entries</p>
-              <p className="text-3xl font-bold text-[#111827] dark:text-white">{fundData.expenses.length}</p>
+              <p className="text-3xl font-bold text-[#111827] dark:text-white">{expenses.length}</p>
+            </div>
+            <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Average Expense</p>
+              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{Math.round(totalExpenses / Math.max(expenses.length, 1)).toLocaleString()}</p>
             </div>
           </div>
 
@@ -124,7 +149,7 @@ export default function ExpensesPage() {
           {/* Expenses Table */}
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-8 border border-[#E5E7EB] dark:border-[#374151]">
             <h3 className="text-xl font-bold text-[#111827] dark:text-white mb-6">Expense List</h3>
-            {fundData.expenses.length === 0 ? (
+            {expenses.length === 0 ? (
               <p className="text-center text-[#6B7280] dark:text-[#9CA3AF] py-8">No expenses recorded yet</p>
             ) : (
               <div className="overflow-x-auto">
@@ -139,7 +164,7 @@ export default function ExpensesPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {fundData.expenses.map(expense => (
+                    {expenses.map(expense => (
                       <tr key={expense.id} className="border-b border-[#E5E7EB] dark:border-[#374151] hover:bg-[#F5F7FA] dark:hover:bg-[#374151]">
                         <td className="py-3 px-4 text-[#111827] dark:text-white font-semibold">{expense.category}</td>
                         <td className="py-3 px-4 text-[#6B7280] dark:text-[#9CA3AF]">{expense.description}</td>

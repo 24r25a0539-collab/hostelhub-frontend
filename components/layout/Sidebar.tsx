@@ -20,7 +20,6 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { useTheme } from '@/lib/theme-context'
 import { RoleSwitch } from '@/components/auth/RoleSwitch'
 
 const menuItems = [
@@ -42,7 +41,6 @@ export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { logout } = useAuth()
-  const { isDarkMode } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
 
   const handleLogout = () => {
@@ -94,9 +92,7 @@ export function Sidebar() {
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
                       ? 'bg-[#F7B538] text-[#1F2937] font-semibold dark:bg-[#F7B538] dark:text-[#1F2937]'
-                      : isDarkMode
-                        ? 'text-[#D1D5DB] dark:hover:bg-[#374151]'
-                        : 'text-[#6B7280] hover:bg-[#F5F7FA]'
+                      : 'text-[#6B7280] dark:text-[#D1D5DB] hover:bg-[#F5F7FA] dark:hover:bg-[#374151]'
                   }`}
                 >
                   <Icon size={20} />
@@ -114,11 +110,7 @@ export function Sidebar() {
         <div className="border-t border-[#E5E7EB] dark:border-[#374151] p-4 space-y-2">
           <Link
             href="/settings"
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              isDarkMode
-                ? 'text-[#D1D5DB] hover:bg-[#374151]'
-                : 'text-[#6B7280] hover:bg-[#F5F7FA]'
-            }`}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-[#6B7280] dark:text-[#D1D5DB] hover:bg-[#F5F7FA] dark:hover:bg-[#374151]"
             onClick={() => setIsOpen(false)}
           >
             <Settings size={20} />
@@ -126,11 +118,7 @@ export function Sidebar() {
           </Link>
           <button
             onClick={handleLogout}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              isDarkMode
-                ? 'text-[#D1D5DB] hover:bg-[#374151]'
-                : 'text-[#6B7280] hover:bg-[#F5F7FA]'
-            }`}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-[#6B7280] dark:text-[#D1D5DB] hover:bg-[#F5F7FA] dark:hover:bg-[#374151]"
           >
             <LogOut size={20} />
             <span>Logout</span>

@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { useTheme } from '@/lib/theme-context'
 import {
   User,
   Settings,
@@ -15,26 +14,14 @@ import {
 
 export function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const { currentUser, logout } = useAuth()
   const router = useRouter()
-  
-  // Use state to track theme instead of calling hook before mount
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [toggleThemeFn, setToggleThemeFn] = useState<() => void>(() => {})
 
-  // Initialize hooks only after mount
   useEffect(() => {
-    try {
-      const themeContext = useTheme()
-      setIsDarkMode(themeContext.isDarkMode)
-      setToggleThemeFn(() => themeContext.toggleTheme)
-      setIsLoaded(true)
-    } catch (e) {
-      // Context not ready yet
-      setIsLoaded(true)
-    }
+    // Check if dark mode from html element
+    setIsDarkMode(document.documentElement.classList.contains('dark'))
   }, [])
 
   // Close dropdown when clicking outside
@@ -61,7 +48,7 @@ export function ProfileDropdown() {
     router.push('/signin')
   }
 
-  if (!isLoaded || !currentUser) {
+  if (!currentUser) {
     return null
   }
 
@@ -86,7 +73,7 @@ export function ProfileDropdown() {
       </button>
 
       {/* Dropdown Menu */}
-      {isOpen && isLoaded && (
+      {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#1F2937] rounded-lg shadow-lg border border-[#E5E7EB] dark:border-[#374151] z-50">
           {/* User Info */}
           <div className="px-4 py-3 border-b border-[#E5E7EB] dark:border-[#374151]">
@@ -119,27 +106,26 @@ export function ProfileDropdown() {
             </Link>
 
             {/* Theme Toggle */}
-            {isLoaded && (
-              <button
-                onClick={() => {
-                  toggleThemeFn()
-                  setIsOpen(false)
-                }}
-                className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#111827] dark:text-white hover:bg-[#F5F7FA] dark:hover:bg-[#374151] transition-colors"
-              >
-                {isDarkMode ? (
-                  <>
-                    <Sun size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
-                    <span>Light Mode</span>
-                  </>
-                ) : (
-                  <>
-                    <Moon size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
-                    <span>Dark Mode</span>
-                  </>
-                )}
-              </button>
-            )}
+            <button
+              onClick={() => {
+                document.documentElement.classList.toggle('dark')
+                setIsDarkMode(!isDarkMode)
+                setIsOpen(false)
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-[#111827] dark:text-white hover:bg-[#F5F7FA] dark:hover:bg-[#374151] transition-colors"
+            >
+              {isDarkMode ? (
+                <>
+                  <Sun size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+                  <span>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
+                  <span>Dark Mode</span>
+                </>
+              )}
+            </button>
 
             {/* Logout */}
             <button
