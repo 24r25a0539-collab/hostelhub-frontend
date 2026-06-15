@@ -1,24 +1,26 @@
 'use client'
 
 import { redirect } from 'next/navigation'
-
-type UserRole = 'STUDENT' | 'MAINTAINER'
+import { useAuth } from '@/lib/auth-context'
 
 export interface RoleGuardProps {
-  requiredRole: UserRole
+  requiredRole: 'STUDENT' | 'MAINTAINER'
   children: React.ReactNode
   fallback?: React.ReactNode
 }
-
-// TODO: Replace with actual auth context when available
-const currentUserRole: UserRole = 'MAINTAINER'
 
 export function RoleGuard({
   requiredRole,
   children,
   fallback,
 }: RoleGuardProps) {
-  if (currentUserRole !== requiredRole) {
+  const { currentRole, isLoading } = useAuth()
+
+  if (isLoading) {
+    return null
+  }
+
+  if (currentRole !== requiredRole) {
     if (fallback) {
       return <>{fallback}</>
     }
