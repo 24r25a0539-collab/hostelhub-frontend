@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import {
   Users,
   Clock,
@@ -19,6 +19,8 @@ import {
   X,
 } from 'lucide-react'
 import { useState } from 'react'
+import { useAuth } from '@/lib/auth-context'
+import { RoleSwitch } from '@/components/auth/RoleSwitch'
 
 const menuItems = [
   { label: 'Dashboard', href: '/', icon: BarChart3 },
@@ -36,7 +38,15 @@ const menuItems = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const { logout } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleLogout = () => {
+    logout()
+    setIsOpen(false)
+    router.push('/signin')
+  }
 
   return (
     <>
@@ -92,13 +102,23 @@ export function Sidebar() {
           </div>
         </nav>
 
+        {/* Role Switch */}
+        <RoleSwitch />
+
         {/* Bottom actions */}
         <div className="border-t border-[#374151] p-4 space-y-2">
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#D1D5DB] hover:bg-[#374151] transition-all">
+          <Link
+            href="/settings"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#D1D5DB] hover:bg-[#374151] transition-all"
+            onClick={() => setIsOpen(false)}
+          >
             <Settings size={20} />
             <span>Settings</span>
-          </button>
-          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#D1D5DB] hover:bg-[#374151] transition-all">
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#D1D5DB] hover:bg-[#374151] transition-all"
+          >
             <LogOut size={20} />
             <span>Logout</span>
           </button>

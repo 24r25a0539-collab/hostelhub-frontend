@@ -1,150 +1,129 @@
 'use client'
 
-import { PageContainer } from '@/components/layout/PageContainer'
-import { StatsCard } from '@/components/cards/StatsCard'
-import {
-  Users,
-  Banknote,
-  CheckCircle,
-  AlertCircle,
-  Calendar,
-} from 'lucide-react'
-import {
-  dashboardStats,
-  recentActivity,
-  announcements,
-  upcomingDuties,
-} from '@/lib/mock-data'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { useAuth } from '@/lib/auth-context'
+import { Users, Calendar, Utensils, Bus, Vote, FileText, CheckCircle, ArrowRight } from 'lucide-react'
 
-export default function Dashboard() {
-  const stats = [
-    {
-      title: 'Total Students',
-      value: dashboardStats.totalStudents,
-      icon: Users,
-      trend: { direction: 'up' as const, percentage: 5 },
-    },
-    {
-      title: 'Current Fund',
-      value: `₹${dashboardStats.currentFund.toLocaleString()}`,
-      icon: Banknote,
-      trend: { direction: 'up' as const, percentage: 8 },
-    },
-    {
-      title: 'Present Today',
-      value: dashboardStats.presentToday,
-      icon: CheckCircle,
-      trend: { direction: 'up' as const, percentage: 2 },
-    },
-    {
-      title: 'Pending Duties',
-      value: dashboardStats.pendingDuties,
-      icon: AlertCircle,
-      trend: { direction: 'down' as const, percentage: 3 },
-    },
-  ]
+export default function LandingPage() {
+  const router = useRouter()
+  const { currentUser, isLoading } = useAuth()
+
+  useEffect(() => {
+    if (!isLoading && currentUser) {
+      router.push('/dashboard')
+    }
+  }, [currentUser, isLoading, router])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827]">
+        <div className="text-[#6B7280] dark:text-[#9CA3AF]">Loading...</div>
+      </div>
+    )
+  }
+
+  if (currentUser) {
+    return null
+  }
 
   return (
-    <PageContainer title="Dashboard">
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        {stats.map((stat, index) => (
-          <StatsCard key={index} {...stat} />
-        ))}
-      </div>
-
-      {/* Charts and Activity Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-[#E5E7EB]">
-          <h2 className="text-xl font-bold text-[#111827] mb-6">Recent Activity</h2>
-          <div className="space-y-4">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 pb-4 border-b border-[#E5E7EB] last:border-b-0">
-                <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 ${
-                  activity.type === 'expense' ? 'bg-red-500' :
-                  activity.type === 'fund' ? 'bg-green-500' :
-                  'bg-blue-500'
-                }`} />
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[#111827] truncate">{activity.title}</p>
-                  <p className="text-sm text-[#6B7280]">{activity.description}</p>
-                  <p className="text-xs text-[#9CA3AF] mt-1">
-                    {new Date(activity.date).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="font-semibold text-[#111827]">{activity.amount}</p>
-                </div>
-              </div>
-            ))}
+    <main className="min-h-screen bg-gradient-to-br from-white to-[#F5F7FA] dark:from-[#111827] dark:to-[#1F2937]">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-[#111827]/80 backdrop-blur-md border-b border-[#E5E7EB] dark:border-[#374151]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-[#F7B538] rounded-lg flex items-center justify-center">
+              <span className="font-bold text-[#1F2937]">H</span>
+            </div>
+            <div>
+              <h1 className="font-bold text-[#111827] dark:text-white">HostelHub</h1>
+              <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Sai Residency Hostel</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/signin" className="px-4 py-2 text-[#111827] dark:text-white hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg transition-all">
+              Sign In
+            </Link>
+            <Link href="/join-hostel" className="px-4 py-2 bg-[#F7B538] text-[#1F2937] rounded-lg font-medium hover:bg-[#F59E0B] transition-all">
+              Join Hostel
+            </Link>
           </div>
         </div>
+      </header>
 
-        {/* Latest Announcements */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E5E7EB]">
-          <h2 className="text-xl font-bold text-[#111827] mb-6">Announcements</h2>
-          <div className="space-y-4">
-            {announcements.map((announcement) => (
-              <div key={announcement.id} className="pb-4 border-b border-[#E5E7EB] last:border-b-0">
-                <div className="flex items-start gap-2 mb-2">
-                  <span className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
-                    announcement.priority === 'high'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-yellow-100 text-yellow-700'
-                  }`}>
-                    {announcement.priority.charAt(0).toUpperCase() + announcement.priority.slice(1)}
-                  </span>
+      {/* Hero Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <h2 className="text-4xl md:text-6xl font-bold text-[#111827] dark:text-white mb-6 text-balance">
+          Complete Hostel Management System
+        </h2>
+        <p className="text-lg text-[#6B7280] dark:text-[#9CA3AF] mb-12 max-w-2xl mx-auto text-balance">
+          Streamline attendance, manage funds, handle cooking duties, and conduct elections all in one place.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link href="/signin" className="px-8 py-4 bg-[#1F3A93] text-white rounded-lg font-semibold hover:bg-[#162952] transition-all flex items-center justify-center gap-2">
+            Sign In <ArrowRight size={20} />
+          </Link>
+          <Link href="/join-hostel" className="px-8 py-4 border-2 border-[#1F3A93] text-[#1F3A93] dark:text-[#F7B538] dark:border-[#F7B538] rounded-lg font-semibold hover:bg-[#1F3A93]/10 transition-all">
+            Create New Account
+          </Link>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="bg-white dark:bg-[#1F2937] py-20 border-t border-[#E5E7EB] dark:border-[#374151]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-3xl font-bold text-[#111827] dark:text-white text-center mb-12">Key Features</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: Users, title: 'Student Management', desc: 'Track all students and manage their records' },
+              { icon: Calendar, title: 'Attendance Tracking', desc: 'Auto-rotated cooking duties and attendance' },
+              { icon: Utensils, title: 'Cooking Duties', desc: 'Assign and manage monthly cooking duties' },
+              { icon: Bus, title: 'Bus Pass System', desc: 'Manage bus pass balance and transactions' },
+              { icon: Vote, title: 'Elections', desc: 'Conduct monthly democratic elections' },
+              { icon: FileText, title: 'Reports', desc: 'Generate comprehensive reports and exports' },
+              { icon: CheckCircle, title: 'Expense Tracking', desc: 'Track hostel expenses and fund management' },
+              { icon: Users, title: 'Visitor Management', desc: 'Log and approve visitor entries' },
+            ].map((feature, idx) => {
+              const Icon = feature.icon
+              return (
+                <div key={idx} className="p-6 rounded-2xl bg-[#F5F7FA] dark:bg-[#374151] hover:shadow-lg transition-shadow">
+                  <Icon className="w-10 h-10 text-[#F7B538] mb-4" />
+                  <h4 className="font-semibold text-[#111827] dark:text-white mb-2">{feature.title}</h4>
+                  <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">{feature.desc}</p>
                 </div>
-                <p className="font-semibold text-sm text-[#111827] line-clamp-2">{announcement.title}</p>
-                <p className="text-xs text-[#6B7280] mt-1">
-                  {new Date(announcement.date).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Upcoming Duties */}
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#E5E7EB]">
-        <div className="flex items-center gap-2 mb-6">
-          <Calendar className="w-5 h-5 text-[#F7B538]" />
-          <h2 className="text-xl font-bold text-[#111827]">Upcoming Duties</h2>
+      {/* Demo Credentials */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="bg-[#F5F7FA] dark:bg-[#374151] rounded-3xl p-8 border border-[#E5E7EB] dark:border-[#4B5563]">
+          <h3 className="text-2xl font-bold text-[#111827] dark:text-white mb-6">Demo Accounts</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="p-4 bg-white dark:bg-[#1F2937] rounded-lg border border-[#E5E7EB] dark:border-[#374151]">
+              <p className="font-semibold text-[#111827] dark:text-white mb-2">Maintainer Account</p>
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Email: john@example.com</p>
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Password: demo@123</p>
+            </div>
+            <div className="p-4 bg-white dark:bg-[#1F2937] rounded-lg border border-[#E5E7EB] dark:border-[#374151]">
+              <p className="font-semibold text-[#111827] dark:text-white mb-2">Student Account</p>
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Email: jane@example.com</p>
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Password: demo@123</p>
+            </div>
+          </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[#E5E7EB]">
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] text-sm">Duty</th>
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] text-sm">Date</th>
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] text-sm">Assigned To</th>
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] text-sm">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {upcomingDuties.map((duty) => (
-                <tr key={duty.id} className="border-b border-[#E5E7EB] hover:bg-[#F5F7FA] transition-all">
-                  <td className="py-3 px-4 text-sm text-[#111827]">{duty.name}</td>
-                  <td className="py-3 px-4 text-sm text-[#6B7280]">
-                    {new Date(duty.date).toLocaleDateString()}
-                  </td>
-                  <td className="py-3 px-4 text-sm text-[#111827]">{duty.assignee}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      duty.status === 'assigned'
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}>
-                      {duty.status.charAt(0).toUpperCase() + duty.status.slice(1)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-[#1F2937] border-t border-[#E5E7EB] dark:border-[#374151] py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <p className="text-[#6B7280] dark:text-[#9CA3AF]">© 2026 HostelHub. All rights reserved.</p>
         </div>
-      </div>
-    </PageContainer>
+      </footer>
+    </main>
   )
 }
