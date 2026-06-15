@@ -58,26 +58,31 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
   // Initialize from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('hostelhub_notifications')
-    if (saved) {
-      try {
-        const data = JSON.parse(saved) as Notification[]
-        // Convert timestamp strings back to Date objects
-        const parsed = data.map((n) => ({
-          ...n,
-          timestamp: new Date(n.timestamp),
-        }))
-        setNotifications(parsed)
-      } catch (e) {
-        // Use defaults if parsing fails
-        const defaults = getDefaultNotifications()
-        setNotifications(defaults)
+    try {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('hostelhub_notifications')
+        if (saved) {
+          try {
+            const data = JSON.parse(saved) as Notification[]
+            // Convert timestamp strings back to Date objects
+            const parsed = data.map((n) => ({
+              ...n,
+              timestamp: new Date(n.timestamp),
+            }))
+            setNotifications(parsed)
+          } catch (e) {
+            // Use defaults if parsing fails
+            const defaults = getDefaultNotifications()
+            setNotifications(defaults)
+          }
+        } else {
+          const defaults = getDefaultNotifications()
+          setNotifications(defaults)
+        }
       }
-    } else {
-      const defaults = getDefaultNotifications()
-      setNotifications(defaults)
+    } finally {
+      setIsLoaded(true)
     }
-    setIsLoaded(true)
   }, [])
 
   const getDefaultNotifications = (): Notification[] => [
@@ -129,7 +134,9 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
 
     const updated = [newNotification, ...notifications]
     setNotifications(updated)
-    localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    }
   }
 
   const markAsRead = (id: string) => {
@@ -137,24 +144,32 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
       n.id === id ? { ...n, read: true } : n,
     )
     setNotifications(updated)
-    localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    }
   }
 
   const markAllAsRead = () => {
     const updated = notifications.map((n) => ({ ...n, read: true }))
     setNotifications(updated)
-    localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    }
   }
 
   const deleteNotification = (id: string) => {
     const updated = notifications.filter((n) => n.id !== id)
     setNotifications(updated)
-    localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hostelhub_notifications', JSON.stringify(updated))
+    }
   }
 
   const clearAll = () => {
     setNotifications([])
-    localStorage.setItem('hostelhub_notifications', JSON.stringify([]))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hostelhub_notifications', JSON.stringify([]))
+    }
   }
 
   if (!isLoaded) {
