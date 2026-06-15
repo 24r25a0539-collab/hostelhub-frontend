@@ -16,6 +16,7 @@ const MOCK_USERS = [
     isElectedMaintainer: true,
     busPassBalance: 5000,
     avatar: 'JD',
+    status: 'approved' as const,
   },
   {
     id: '2',
@@ -26,6 +27,29 @@ const MOCK_USERS = [
     isElectedMaintainer: false,
     busPassBalance: 2500,
     avatar: 'JS',
+    status: 'approved' as const,
+  },
+]
+
+// Mock pending registrations
+const PENDING_REGISTRATIONS = [
+  {
+    id: 'pending-1',
+    name: 'Alice Johnson',
+    email: 'alice@example.com',
+    phone: '+91 9876543210',
+    hostelCode: 'SRH2026',
+    status: 'pending' as const,
+    submittedAt: new Date('2026-06-10'),
+  },
+  {
+    id: 'pending-2',
+    name: 'Bob Wilson',
+    email: 'bob@example.com',
+    phone: '+91 9876543211',
+    hostelCode: 'SRH2026',
+    status: 'pending' as const,
+    submittedAt: new Date('2026-06-12'),
   },
 ]
 

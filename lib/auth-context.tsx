@@ -18,6 +18,7 @@ export interface User {
   isElectedMaintainer: boolean
   busPassBalance: number
   avatar?: string
+  status?: 'approved' | 'pending' | 'rejected' // Student registration status
 }
 
 interface AuthContextType {
