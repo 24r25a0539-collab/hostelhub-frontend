@@ -1,5 +1,6 @@
 'use client'
 
+import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { StatsCard } from '@/components/cards/StatsCard'
 import {
@@ -8,6 +9,7 @@ import {
   CheckCircle,
   AlertCircle,
   Calendar,
+  TrendingUp,
 } from 'lucide-react'
 import {
   dashboardStats,
@@ -17,7 +19,98 @@ import {
 } from '@/lib/mock-data'
 
 export default function Dashboard() {
-  const stats = [
+  const { currentRole } = useAuth()
+
+  if (currentRole === 'STUDENT') {
+    const studentStats = [
+      {
+        title: 'Attendance',
+        value: '92%',
+        icon: CheckCircle,
+        trend: { direction: 'up' as const, percentage: 5 },
+      },
+      {
+        title: 'Bus Pass Balance',
+        value: '₹5,000',
+        icon: Banknote,
+        trend: { direction: 'up' as const, percentage: 0 },
+      },
+      {
+        title: 'Hostel Fund',
+        value: '₹15,000',
+        icon: TrendingUp,
+        trend: { direction: 'up' as const, percentage: 8 },
+      },
+      {
+        title: 'Next Duty',
+        value: 'June 20',
+        icon: Calendar,
+        trend: { direction: 'down' as const, percentage: 0 },
+      },
+    ]
+
+    return (
+      <PageContainer title="My Dashboard">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {studentStats.map((stat, index) => (
+            <StatsCard key={index} {...stat} />
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+          <div className="lg:col-span-2 bg-white dark:bg-[#1F2937] rounded-3xl p-6 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
+            <h2 className="text-xl font-bold text-[#111827] dark:text-white mb-6">Recent Activity</h2>
+            <div className="space-y-4">
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-start gap-4 pb-4 border-b border-[#E5E7EB] dark:border-[#374151] last:border-b-0">
+                  <div className={`w-3 h-3 rounded-full mt-2 flex-shrink-0 ${
+                    activity.type === 'expense' ? 'bg-red-500' :
+                    activity.type === 'fund' ? 'bg-green-500' :
+                    'bg-blue-500'
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-[#111827] dark:text-white truncate">{activity.title}</p>
+                    <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">{activity.description}</p>
+                    <p className="text-xs text-[#9CA3AF] dark:text-[#6B7280] mt-1">
+                      {new Date(activity.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <p className="font-semibold text-[#111827] dark:text-white">{activity.amount}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
+            <h2 className="text-xl font-bold text-[#111827] dark:text-white mb-6">Announcements</h2>
+            <div className="space-y-4">
+              {announcements.map((announcement) => (
+                <div key={announcement.id} className="pb-4 border-b border-[#E5E7EB] dark:border-[#374151] last:border-b-0">
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className={`px-2 py-1 rounded text-xs font-medium flex-shrink-0 ${
+                      announcement.priority === 'high'
+                        ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                        : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                    }`}>
+                      {announcement.priority.charAt(0).toUpperCase() + announcement.priority.slice(1)}
+                    </span>
+                  </div>
+                  <p className="font-semibold text-sm text-[#111827] dark:text-white line-clamp-2">{announcement.title}</p>
+                  <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1">
+                    {new Date(announcement.date).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </PageContainer>
+    )
+  }
+
+  const maintainerStats = [
     {
       title: 'Total Students',
       value: dashboardStats.totalStudents,
@@ -45,10 +138,10 @@ export default function Dashboard() {
   ]
 
   return (
-    <PageContainer title="Dashboard">
+    <PageContainer title="Maintainer Dashboard">
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        {stats.map((stat, index) => (
+        {maintainerStats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
       </div>
