@@ -2,22 +2,11 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
+import { useFund } from '@/lib/fund-context'
+import { useNotifications } from '@/lib/notifications-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Plus, Upload, X, Download, Trash2 } from 'lucide-react'
-
-interface Expense {
-  id: string
-  category: string
-  amount: number
-  description: string
-  date: string
-  billNumber?: string
-  billFile?: {
-    name: string
-    uploadedDate: string
-  }
-}
 
 const CATEGORIES = [
   'Groceries',
@@ -32,50 +21,19 @@ const CATEGORIES = [
   'Miscellaneous',
 ]
 
-const mockExpenses: Expense[] = [
-  {
-    id: '1',
-    category: 'Groceries',
-    amount: 5000,
-    description: 'Weekly grocery shopping',
-    date: '2026-06-10',
-    billNumber: 'INV-001',
-    billFile: { name: 'invoice_001.pdf', uploadedDate: '2026-06-10' },
-  },
-  {
-    id: '2',
-    category: 'Electricity',
-    amount: 2500,
-    description: 'Monthly electricity bill',
-    date: '2026-06-08',
-    billNumber: 'EL-2024-06',
-  },
-  {
-    id: '3',
-    category: 'Maintenance',
-    amount: 1500,
-    description: 'Pipe repair in common area',
-    date: '2026-06-05',
-  },
-]
-
 export default function ExpensesPage() {
   const { currentRole } = useAuth()
-  const [expenses, setExpenses] = useState<Expense[]>(mockExpenses)
+  const { fundData, addExpense: addFundExpense, deleteExpense: deleteFundExpense } = useFund()
+  const { addNotification } = useNotifications()
   const [showAddDialog, setShowAddDialog] = useState(false)
-  const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null)
-  const [showDetailsDialog, setShowDetailsDialog] = useState(false)
   const [toast, setToast] = useState('')
   
   const [formData, setFormData] = useState({
     category: '',
     amount: '',
     description: '',
-    billNumber: '',
   })
   const [uploadedFile, setUploadedFile] = useState<{ name: string; uploadedDate: string } | null>(null)
-
-  const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0)
 
   const handleAddExpense = () => {
     if (currentRole !== 'MAINTAINER') {
@@ -89,18 +47,22 @@ export default function ExpensesPage() {
       return
     }
 
-    const newExpense: Expense = {
-      id: Math.random().toString(),
+    const amount = parseFloat(formData.amount)
+    addFundExpense({
       category: formData.category,
-      amount: parseFloat(formData.amount),
+      amount: amount,
       description: formData.description,
-      date: new Date().toISOString().split('T')[0],
-      billNumber: formData.billNumber || undefined,
-      billFile: uploadedFile || undefined,
-    }
+    })
 
-    setExpenses([newExpense, ...expenses])
-    setFormData({ category: '', amount: '', description: '', billNumber: '' })
+    // Add notification
+    addNotification({
+      type: 'expense_added',
+      title: 'Expense Added',
+      message: `${formData.category} expense of ₹${amount} has been added`,
+      priority: 'normal',
+    })
+
+    setFormData({ category: '', amount: '', description: '' })
     setUploadedFile(null)
     setShowAddDialog(false)
   }
@@ -126,7 +88,7 @@ export default function ExpensesPage() {
       setTimeout(() => setToast(''), 3000)
       return
     }
-    setExpenses(expenses.filter(e => e.id !== id))
+    deleteFundExpense(id)
   }
 
   return (
@@ -136,16 +98,16 @@ export default function ExpensesPage() {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Current Fund</p>
+              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{fundData.currentBalance.toLocaleString()}</p>
+            </div>
+            <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
               <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Total Expenses</p>
-              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{totalExpenses.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{fundData.expensesTotal.toLocaleString()}</p>
             </div>
             <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
               <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Total Entries</p>
-              <p className="text-3xl font-bold text-[#111827] dark:text-white">{expenses.length}</p>
-            </div>
-            <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E5E7EB] dark:border-[#374151]">
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Average Expense</p>
-              <p className="text-3xl font-bold text-[#111827] dark:text-white">₹{Math.round(totalExpenses / Math.max(expenses.length, 1)).toLocaleString()}</p>
+              <p className="text-3xl font-bold text-[#111827] dark:text-white">{fundData.expenses.length}</p>
             </div>
           </div>
 
@@ -162,7 +124,7 @@ export default function ExpensesPage() {
           {/* Expenses Table */}
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-8 border border-[#E5E7EB] dark:border-[#374151]">
             <h3 className="text-xl font-bold text-[#111827] dark:text-white mb-6">Expense List</h3>
-            {expenses.length === 0 ? (
+            {fundData.expenses.length === 0 ? (
               <p className="text-center text-[#6B7280] dark:text-[#9CA3AF] py-8">No expenses recorded yet</p>
             ) : (
               <div className="overflow-x-auto">
@@ -173,46 +135,22 @@ export default function ExpensesPage() {
                       <th className="text-left py-3 px-4 font-semibold text-[#111827] dark:text-white">Description</th>
                       <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Amount</th>
                       <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Date</th>
-                      <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Bill</th>
                       <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {expenses.map(expense => (
+                    {fundData.expenses.map(expense => (
                       <tr key={expense.id} className="border-b border-[#E5E7EB] dark:border-[#374151] hover:bg-[#F5F7FA] dark:hover:bg-[#374151]">
                         <td className="py-3 px-4 text-[#111827] dark:text-white font-semibold">{expense.category}</td>
                         <td className="py-3 px-4 text-[#6B7280] dark:text-[#9CA3AF]">{expense.description}</td>
                         <td className="py-3 px-4 text-center text-[#111827] dark:text-white font-semibold">₹{expense.amount}</td>
                         <td className="py-3 px-4 text-center text-[#6B7280] dark:text-[#9CA3AF]">{expense.date}</td>
                         <td className="py-3 px-4 text-center">
-                          {expense.billFile ? (
-                            <button
-                              onClick={() => {
-                                setSelectedExpense(expense)
-                                setShowDetailsDialog(true)
-                              }}
-                              className="text-blue-600 hover:text-blue-700 text-sm font-semibold"
-                            >
-                              View
-                            </button>
-                          ) : (
-                            <span className="text-[#9CA3AF] text-sm">None</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <button
-                            onClick={() => {
-                              setSelectedExpense(expense)
-                              setShowDetailsDialog(true)
-                            }}
-                            className="text-blue-600 hover:text-blue-700 text-sm font-semibold mr-4"
-                          >
-                            Details
-                          </button>
                           {currentRole === 'MAINTAINER' && (
                             <button
                               onClick={() => handleDeleteExpense(expense.id)}
                               className="text-red-600 hover:text-red-700"
+                              title="Delete expense"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -286,18 +224,6 @@ export default function ExpensesPage() {
                     />
                   </div>
 
-                  {/* Bill Number */}
-                  <div>
-                    <label className="block text-sm font-semibold text-[#111827] dark:text-white mb-2">Bill Number (Optional)</label>
-                    <input
-                      type="text"
-                      value={formData.billNumber}
-                      onChange={e => setFormData({ ...formData, billNumber: e.target.value })}
-                      placeholder="Enter bill number"
-                      className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#111827] text-[#111827] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1F3A93]"
-                    />
-                  </div>
-
                   {/* File Upload */}
                   <div>
                     <label className="block text-sm font-semibold text-[#111827] dark:text-white mb-2">Scan Bill (Optional)</label>
@@ -340,66 +266,6 @@ export default function ExpensesPage() {
             </div>
           )}
 
-          {/* Expense Details Dialog */}
-          {showDetailsDialog && selectedExpense && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-8 max-w-md w-full">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-[#111827] dark:text-white">Expense Details</h3>
-                  <button
-                    onClick={() => setShowDetailsDialog(false)}
-                    className="p-1 hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Category</p>
-                    <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedExpense.category}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Amount</p>
-                    <p className="text-lg font-semibold text-[#111827] dark:text-white">₹{selectedExpense.amount}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Description</p>
-                    <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedExpense.description}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Date</p>
-                    <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedExpense.date}</p>
-                  </div>
-                  {selectedExpense.billNumber && (
-                    <div>
-                      <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Bill Number</p>
-                      <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedExpense.billNumber}</p>
-                    </div>
-                  )}
-                  {selectedExpense.billFile && (
-                    <div className="p-4 bg-[#F5F7FA] dark:bg-[#374151] rounded-lg">
-                      <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Bill Attachment</p>
-                      <div className="flex items-center gap-2">
-                        <Download size={16} className="text-[#6B7280] dark:text-[#9CA3AF]" />
-                        <div>
-                          <p className="font-semibold text-[#111827] dark:text-white">{selectedExpense.billFile.name}</p>
-                          <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Uploaded: {selectedExpense.billFile.uploadedDate}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={() => setShowDetailsDialog(false)}
-                    className="w-full px-4 py-2 bg-[#1F3A93] text-white rounded-lg font-semibold hover:bg-[#162952] transition-all"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </PageContainer>
     </ProtectedRoute>
