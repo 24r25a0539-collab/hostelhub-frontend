@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { Plus, Minus, X } from 'lucide-react'
+import { Plus, Minus, X, Edit2 } from 'lucide-react'
+import { HOSTEL_STUDENTS } from '@/lib/students-data'
 
 interface BusPassTransaction {
   id: string
@@ -22,33 +23,19 @@ interface Student {
   room: string
   busPassEligible: boolean
   busPassBalance: number
+  backlogCount: number
 }
 
 const MONTHLY_ALLOCATION = 630
 
-const mockStudents: Student[] = [
-  {
-    id: '1',
-    name: 'Arjun Reddy',
-    room: '203',
-    busPassEligible: true,
-    busPassBalance: 540,
-  },
-  {
-    id: '2',
-    name: 'Priya Sharma',
-    room: '204',
-    busPassEligible: true,
-    busPassBalance: 450,
-  },
-  {
-    id: '3',
-    name: 'Vikram Iyer',
-    room: '205',
-    busPassEligible: false,
-    busPassBalance: 0,
-  },
-]
+const mockStudents: Student[] = HOSTEL_STUDENTS.map(s => ({
+  id: s.id,
+  name: s.name,
+  room: s.room,
+  busPassEligible: s.busPassEligible,
+  busPassBalance: s.busPassBalance,
+  backlogCount: s.backlogCount,
+}))
 
 const mockTransactions: BusPassTransaction[] = [
   {
@@ -87,6 +74,8 @@ export default function BusPassPage() {
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showDeductDialog, setShowDeductDialog] = useState(false)
   const [showEligibilityDialog, setShowEligibilityDialog] = useState(false)
+  const [editingBacklogId, setEditingBacklogId] = useState<string | null>(null)
+  const [backlogInput, setBacklogInput] = useState<string>('')
   const [amount, setAmount] = useState('')
   const [description, setDescription] = useState('')
   const [toast, setToast] = useState('')
@@ -196,6 +185,27 @@ export default function BusPassPage() {
     setTransactions(mockTransactions)
   }
 
+  const handleUpdateBacklog = (studentId: string) => {
+    if (currentRole !== 'MAINTAINER') {
+      setToast('You are not the current maintainer.')
+      setTimeout(() => setToast(''), 3000)
+      return
+    }
+
+    const backlogNum = parseInt(backlogInput)
+    if (isNaN(backlogNum) || backlogNum < 0) {
+      alert('Please enter a valid backlog count')
+      return
+    }
+
+    setSelectedStudent({
+      ...selectedStudent,
+      backlogCount: backlogNum,
+    })
+    setEditingBacklogId(null)
+    setBacklogInput('')
+  }
+
   return (
     <ProtectedRoute>
       <PageContainer title="Bus Pass Balance" breadcrumbs={[{ label: 'Bus Pass' }]}>
@@ -245,21 +255,70 @@ export default function BusPassPage() {
               </div>
             </div>
 
-            {/* Eligibility Status */}
-            <div className="mt-6 p-4 bg-white rounded-lg border border-blue-200">
-              <p className="text-sm text-[#6B7280] mb-2">Bus Pass Eligibility</p>
-              <div className="flex items-center justify-between">
-                <p className="text-lg font-semibold text-[#111827]">
-                  {selectedStudent.busPassEligible ? 'Eligible' : 'Not Eligible'}
-                </p>
-                {currentRole === 'MAINTAINER' && (
-                  <button
-                    onClick={() => setShowEligibilityDialog(true)}
-                    className="text-sm px-4 py-2 bg-[#1F3A93] text-white rounded-lg hover:bg-[#162952] transition-all"
-                  >
-                    {selectedStudent.busPassEligible ? 'Remove' : 'Grant'} Eligibility
-                  </button>
-                )}
+            {/* Status Cards */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Eligibility Status */}
+              <div className="p-4 bg-white rounded-lg border border-blue-200">
+                <p className="text-sm text-[#6B7280] mb-2">Bus Pass Eligibility</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-semibold text-[#111827]">
+                    {selectedStudent.busPassEligible ? 'Eligible' : 'Not Eligible'}
+                  </p>
+                  {currentRole === 'MAINTAINER' && (
+                    <button
+                      onClick={() => setShowEligibilityDialog(true)}
+                      className="text-sm px-3 py-1 bg-[#1F3A93] text-white rounded hover:bg-[#162952] transition-all"
+                    >
+                      {selectedStudent.busPassEligible ? 'Remove' : 'Grant'}
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Backlog Status */}
+              <div className={`p-4 rounded-lg border-2 ${
+                selectedStudent.backlogCount === 0
+                  ? 'bg-green-50 border-green-300'
+                  : 'bg-red-50 border-red-300'
+              }`}>
+                <p className="text-sm text-[#6B7280] mb-2">Backlog Status</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <p className={`text-lg font-semibold ${
+                      selectedStudent.backlogCount === 0 ? 'text-green-700' : 'text-red-700'
+                    }`}>
+                      {selectedStudent.backlogCount === 0 ? 'No Backlogs' : `${selectedStudent.backlogCount} Pending`}
+                    </p>
+                  </div>
+                  {editingBacklogId === selectedStudent.id ? (
+                    <div className="flex gap-1">
+                      <input
+                        type="number"
+                        value={backlogInput}
+                        onChange={e => setBacklogInput(e.target.value)}
+                        min="0"
+                        className="w-16 px-2 py-1 border border-[#E5E7EB] rounded focus:outline-none focus:ring-2 focus:ring-[#1F3A93]"
+                        placeholder="0"
+                      />
+                      <button
+                        onClick={() => handleUpdateBacklog(selectedStudent.id)}
+                        className="px-2 py-1 bg-[#1F3A93] text-white rounded text-xs hover:bg-[#162952]"
+                      >
+                        Save
+                      </button>
+                    </div>
+                  ) : currentRole === 'MAINTAINER' ? (
+                    <button
+                      onClick={() => {
+                        setEditingBacklogId(selectedStudent.id)
+                        setBacklogInput(selectedStudent.backlogCount.toString())
+                      }}
+                      className="text-sm px-3 py-1 bg-[#1F3A93] text-white rounded hover:bg-[#162952] transition-all"
+                    >
+                      <Edit2 size={14} className="inline" />
+                    </button>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>

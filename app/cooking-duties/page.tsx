@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ChevronLeft, ChevronRight, Edit2, Copy, X } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { HOSTEL_STUDENTS } from '@/lib/students-data'
 
 interface CookingDuty {
   id: string
@@ -12,18 +13,15 @@ interface CookingDuty {
   studentId: string
   studentName: string
   roomNumber: string
+  backlogCount: number
 }
 
-const mockStudents = [
-  { id: '1', name: 'Arjun Reddy', room: '203' },
-  { id: '2', name: 'Priya Sharma', room: '204' },
-  { id: '3', name: 'Vikram Iyer', room: '205' },
-  { id: '4', name: 'Ananya Singh', room: '206' },
-  { id: '5', name: 'Rohit Mehra', room: '207' },
-  { id: '6', name: 'Sneha Patel', room: '208' },
-  { id: '7', name: 'Karthik Rao', room: '209' },
-  { id: '8', name: 'Divya Nair', room: '210' },
-]
+const mockStudents = HOSTEL_STUDENTS.map(s => ({
+  id: s.id,
+  name: s.name,
+  room: s.room,
+  backlogCount: s.backlogCount,
+}))
 
 const generateMockDuties = (month: number, year: number) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
@@ -31,12 +29,14 @@ const generateMockDuties = (month: number, year: number) => {
 
   for (let day = 1; day <= daysInMonth; day++) {
     const studentIndex = (day - 1) % mockStudents.length
+    const student = mockStudents[studentIndex]
     duties.push({
       id: `${month}-${year}-${day}`,
       date: new Date(year, month, day),
-      studentId: mockStudents[studentIndex].id,
-      studentName: mockStudents[studentIndex].name,
-      roomNumber: mockStudents[studentIndex].room,
+      studentId: student.id,
+      studentName: student.name,
+      roomNumber: student.room,
+      backlogCount: student.backlogCount,
     })
   }
 

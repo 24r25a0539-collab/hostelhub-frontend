@@ -5,21 +5,25 @@ import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { ThumbsUp, Crown } from 'lucide-react'
+import { HOSTEL_STUDENTS } from '@/lib/students-data'
 
 interface Candidate {
   id: string
   name: string
   room: string
+  backlogCount: number
   voteCount: number
   isWinner: boolean
 }
 
-const mockCandidates: Candidate[] = [
-  { id: '1', name: 'Arjun Reddy', room: '101', voteCount: 25, isWinner: true },
-  { id: '2', name: 'Priya Sharma', room: '102', voteCount: 18, isWinner: false },
-  { id: '3', name: 'Vikram Iyer', room: '103', voteCount: 12, isWinner: false },
-  { id: '4', name: 'Neha Singh', room: '104', voteCount: 8, isWinner: false },
-]
+const mockCandidates: Candidate[] = HOSTEL_STUDENTS.map((s, idx) => ({
+  id: s.id,
+  name: s.name,
+  room: s.room,
+  backlogCount: s.backlogCount,
+  voteCount: [25, 18, 12, 8, 5, 2][idx] || 0,
+  isWinner: idx === 0,
+}))
 
 export default function ElectionsPage() {
   const { currentRole } = useAuth()

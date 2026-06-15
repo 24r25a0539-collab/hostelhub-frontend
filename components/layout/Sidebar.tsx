@@ -26,6 +26,7 @@ const menuItems = [
   { label: 'Dashboard', href: '/', icon: BarChart3 },
   { label: 'Students', href: '/students', icon: Users },
   { label: 'Attendance', href: '/attendance', icon: Clock },
+  { label: 'Bus Pass', href: '/bus-pass', icon: Banknote },
   { label: 'Fund Management', href: '/fund-management', icon: Banknote },
   { label: 'Expenses', href: '/expenses', icon: Receipt },
   { label: 'Cooking Duties', href: '/cooking-duties', icon: UtensilsCrossed },

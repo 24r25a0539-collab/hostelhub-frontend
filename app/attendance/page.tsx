@@ -5,22 +5,23 @@ import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ChevronLeft, ChevronRight, Check, X } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { HOSTEL_STUDENTS } from '@/lib/students-data'
 
 interface StudentAttendance {
   id: string
   name: string
   room: string
+  backlogCount: number
   attendance: 'present' | 'absent' | null
 }
 
-const mockStudents: StudentAttendance[] = [
-  { id: '1', name: 'Arjun Reddy', room: 'A-101', attendance: null },
-  { id: '2', name: 'Priya Sharma', room: 'A-102', attendance: null },
-  { id: '3', name: 'Vikram Iyer', room: 'A-103', attendance: null },
-  { id: '4', name: 'Ananya Singh', room: 'A-104', attendance: null },
-  { id: '5', name: 'Rohit Mehra', room: 'A-105', attendance: null },
-  { id: '6', name: 'Sneha Patel', room: 'A-106', attendance: null },
-]
+const mockStudents: StudentAttendance[] = HOSTEL_STUDENTS.map(s => ({
+  id: s.id,
+  name: s.name,
+  room: s.room,
+  backlogCount: s.backlogCount,
+  attendance: null,
+}))
 
 export default function AttendancePage() {
   const { currentRole } = useAuth()
