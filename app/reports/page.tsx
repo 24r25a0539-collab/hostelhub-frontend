@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { FileText, Download, Printer } from 'lucide-react'
+import { FileText, Download, Printer, Eye, X } from 'lucide-react'
 
 interface Report {
   id: string
@@ -73,19 +74,48 @@ const reports: Report[] = [
 ]
 
 export default function ReportsPage() {
+  const { currentRole } = useAuth()
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
-  const [exportFormat, setExportFormat] = useState<'pdf' | 'excel' | 'print'>('pdf')
+  const [showViewDialog, setShowViewDialog] = useState(false)
+  const [toast, setToast] = useState('')
+
+  const handleGenerate = () => {
+    if (currentRole !== 'MAINTAINER') {
+      setToast('You are not the current maintainer.')
+      setTimeout(() => setToast(''), 3000)
+      return
+    }
+    alert(`Generating ${selectedReport?.title}...`)
+  }
 
   const handleExport = (format: 'pdf' | 'excel' | 'print') => {
+    if (!selectedReport) return
+    
     if (format === 'print') {
       window.print()
-    } else {
-      alert(`${selectedReport?.title} exported as ${format.toUpperCase()}`)
+    } else if (format === 'pdf') {
+      // Generate mock PDF
+      const dataStr = JSON.stringify(selectedReport, null, 2)
+      const dataBlob = new Blob([dataStr], { type: 'application/json' })
+      const url = URL.createObjectURL(dataBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${selectedReport.title.replace(' ', '_')}.pdf`
+      link.click()
+    } else if (format === 'excel') {
+      // Generate mock Excel
+      const dataStr = `Report: ${selectedReport.title}\nGenerated: ${new Date().toLocaleDateString()}`
+      const dataBlob = new Blob([dataStr], { type: 'text/csv' })
+      const url = URL.createObjectURL(dataBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${selectedReport.title.replace(' ', '_')}.csv`
+      link.click()
     }
   }
 
   return (
-    <ProtectedRoute requiredRole="MAINTAINER">
+    <ProtectedRoute>
       <PageContainer title="Reports & Analytics">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {reports.map((report) => (
@@ -229,31 +259,112 @@ export default function ReportsPage() {
             </div>
 
             <div className="border-t border-[#E5E7EB] dark:border-[#374151] pt-6">
-              <h3 className="font-semibold text-[#111827] dark:text-white mb-4">Export Report</h3>
+              <h3 className="font-semibold text-[#111827] dark:text-white mb-4">Actions</h3>
               <div className="flex gap-3 flex-wrap">
+                <button
+                  onClick={() => setShowViewDialog(true)}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+                >
+                  <Eye size={18} />
+                  View Report
+                </button>
+
+                {currentRole === 'MAINTAINER' && (
+                  <button
+                    onClick={handleGenerate}
+                    className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+                  >
+                    Generate Report
+                  </button>
+                )}
+
                 <button
                   onClick={() => handleExport('pdf')}
                   className="px-6 py-3 bg-[#F7B538] hover:bg-[#F59E0B] text-[#1F2937] font-semibold rounded-lg transition-all flex items-center gap-2"
                 >
                   <Download size={18} />
-                  Export as PDF
+                  Download PDF
                 </button>
                 <button
                   onClick={() => handleExport('excel')}
                   className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
                 >
                   <Download size={18} />
-                  Export as Excel
+                  Download Excel
                 </button>
                 <button
                   onClick={() => handleExport('print')}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
+                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-all flex items-center gap-2"
                 >
                   <Printer size={18} />
-                  Print Report
+                  Print
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* View Report Dialog */}
+        {showViewDialog && selectedReport && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-8 max-w-2xl w-full max-h-96 overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-[#111827] dark:text-white">Report Preview: {selectedReport.title}</h3>
+                <button
+                  onClick={() => setShowViewDialog(false)}
+                  className="p-1 hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF] mb-2">Report Details</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-[#F5F7FA] dark:bg-[#374151] rounded-lg">
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Type</p>
+                      <p className="font-semibold text-[#111827] dark:text-white">{selectedReport.type}</p>
+                    </div>
+                    <div className="p-3 bg-[#F5F7FA] dark:bg-[#374151] rounded-lg">
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Data Points</p>
+                      <p className="font-semibold text-[#111827] dark:text-white">{selectedReport.dataPoints}</p>
+                    </div>
+                    <div className="p-3 bg-[#F5F7FA] dark:bg-[#374151] rounded-lg">
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Last Generated</p>
+                      <p className="font-semibold text-[#111827] dark:text-white">{selectedReport.lastGenerated.toLocaleDateString()}</p>
+                    </div>
+                    <div className="p-3 bg-[#F5F7FA] dark:bg-[#374151] rounded-lg">
+                      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF]">Status</p>
+                      <p className="font-semibold text-green-600 dark:text-green-400">Generated</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-semibold text-[#6B7280] dark:text-[#9CA3AF] mb-2">Description</p>
+                  <p className="text-[#111827] dark:text-white">{selectedReport.description}</p>
+                </div>
+
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm text-blue-800 dark:text-blue-300">This is a preview of the {selectedReport.title}. Download or print to see the full report with detailed analytics and charts.</p>
+                </div>
+
+                <button
+                  onClick={() => setShowViewDialog(false)}
+                  className="w-full px-4 py-2 bg-[#1F3A93] text-white rounded-lg font-semibold hover:bg-[#162952] transition-all"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Toast */}
+        {toast && (
+          <div className="fixed bottom-6 right-6 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            {toast}
           </div>
         )}
       </PageContainer>

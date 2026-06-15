@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { useTheme } from '@/lib/theme-context'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Header } from '@/components/layout/Header'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { PageContainer } from '@/components/layout/PageContainer'
@@ -10,21 +11,9 @@ import { User, Lock, Building2, Moon, Sun, Mail, Phone, MapPin } from 'lucide-re
 
 type SettingsTab = 'profile' | 'hostel' | 'theme' | 'account'
 
-export default function SettingsPage() {
+function SettingsContent() {
   const { currentUser } = useAuth()
-  const [isDarkMode, setIsDarkMode] = useState(false)
-  const [toggleThemeFn, setToggleThemeFn] = useState<() => void>(() => {})
-  
-  // Initialize theme context only after mount
-  useEffect(() => {
-    try {
-      const themeContext = useTheme()
-      setIsDarkMode(themeContext.isDarkMode)
-      setToggleThemeFn(() => themeContext.toggleTheme)
-    } catch (e) {
-      // Context not ready yet
-    }
-  }, [])
+  const { isDarkMode, toggleTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile')
   const [isSaving, setIsSaving] = useState(false)
   const [profileData, setProfileData] = useState({
@@ -94,7 +83,7 @@ export default function SettingsPage() {
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                  {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
                   Theme
                 </div>
               </button>
@@ -299,7 +288,7 @@ export default function SettingsPage() {
                     {/* Light Theme */}
                     <button
                       onClick={() => {
-                        if (isDarkMode) toggleThemeFn()
+                        if (isDarkMode) toggleTheme()
                       }}
                       className={`p-6 rounded-lg border-2 transition-all ${
                         !isDarkMode
@@ -319,7 +308,7 @@ export default function SettingsPage() {
                     {/* Dark Theme */}
                     <button
                       onClick={() => {
-                        if (!isDarkMode) toggleThemeFn()
+                        if (!isDarkMode) toggleTheme()
                       }}
                       className={`p-6 rounded-lg border-2 transition-all ${
                         isDarkMode
@@ -412,5 +401,13 @@ export default function SettingsPage() {
         </PageContainer>
       </div>
     </div>
+  )
+}
+
+export default function SettingsPage() {
+  return (
+    <ProtectedRoute>
+      <SettingsContent />
+    </ProtectedRoute>
   )
 }
