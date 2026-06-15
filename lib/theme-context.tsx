@@ -21,7 +21,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   // Initialize from localStorage on mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem('hostelhub_theme')
+    const savedTheme = localStorage.getItem('theme-mode')
     const prefersDark = window.matchMedia(
       '(prefers-color-scheme: dark)',
     ).matches
@@ -49,7 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const newMode = !isDarkMode
     setIsDarkMode(newMode)
     applyTheme(newMode)
-    localStorage.setItem('hostelhub_theme', newMode ? 'dark' : 'light')
+    localStorage.setItem('theme-mode', newMode ? 'dark' : 'light')
   }
 
   if (!isLoaded) {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { RoleGuard } from '@/components/auth/RoleGuard'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { FileText, Download, Printer } from 'lucide-react'
 
 interface Report {
@@ -85,7 +85,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <RoleGuard requiredRole="MAINTAINER">
+    <ProtectedRoute requiredRole="MAINTAINER">
       <PageContainer title="Reports & Analytics">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           {reports.map((report) => (
@@ -257,6 +257,6 @@ export default function ReportsPage() {
           </div>
         )}
       </PageContainer>
-    </RoleGuard>
+    </ProtectedRoute>
   )
 }

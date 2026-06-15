@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
@@ -36,7 +36,14 @@ export default function SignInPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const { login } = useAuth()
+  const { currentUser, login } = useAuth()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (currentUser) {
+      router.push('/')
+    }
+  }, [currentUser, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,9 +65,9 @@ export default function SignInPage() {
         return
       }
 
-      // Login and redirect
+      // Login and redirect to dashboard
       login(user)
-      router.push('/')
+      router.push('/dashboard')
     } catch (err) {
       setError('An error occurred. Please try again.')
       setIsLoading(false)

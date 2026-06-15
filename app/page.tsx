@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
 import { StatsCard } from '@/components/cards/StatsCard'
@@ -19,7 +21,22 @@ import {
 } from '@/lib/mock-data'
 
 export default function Dashboard() {
-  const { currentRole } = useAuth()
+  const router = useRouter()
+  const { currentUser, currentRole, isLoading } = useAuth()
+
+  useEffect(() => {
+    if (!isLoading && !currentUser) {
+      router.push('/signin')
+    }
+  }, [currentUser, isLoading, router])
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  }
+
+  if (!currentUser) {
+    return null
+  }
 
   if (currentRole === 'STUDENT') {
     const studentStats = [

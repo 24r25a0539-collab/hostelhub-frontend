@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Plus, Minus, Eye } from 'lucide-react'
 
 interface Transaction {
@@ -25,7 +26,7 @@ interface StudentBusPass {
 const mockStudents: StudentBusPass[] = [
   {
     id: '1',
-    name: 'Rahul Kumar',
+    name: 'Arjun Reddy',
     room: '101',
     balance: 5000,
     transactions: [
@@ -54,7 +55,8 @@ export default function BusPassPage() {
   if (currentRole === 'STUDENT') {
     const student = students[0]
     return (
-      <PageContainer title="Bus Pass">
+      <ProtectedRoute>
+        <PageContainer title="Bus Pass">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
             <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-2">Current Balance</p>
@@ -110,11 +112,13 @@ export default function BusPassPage() {
           </div>
         </div>
       </PageContainer>
+      </ProtectedRoute>
     )
   }
 
   return (
-    <PageContainer title="Bus Pass Management">
+    <ProtectedRoute requiredRole="MAINTAINER">
+      <PageContainer title="Bus Pass Management">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white dark:bg-[#1F2937] rounded-3xl p-8 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
           <h3 className="text-xl font-bold text-[#111827] dark:text-white mb-6">Student Bus Pass List</h3>
@@ -247,6 +251,7 @@ export default function BusPassPage() {
           </div>
         )}
       </div>
-    </PageContainer>
+      </PageContainer>
+    </ProtectedRoute>
   )
 }

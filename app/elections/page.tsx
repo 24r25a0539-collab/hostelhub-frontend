@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { PageContainer } from '@/components/layout/PageContainer'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { ThumbsUp, Crown } from 'lucide-react'
 
 interface Candidate {
@@ -14,9 +15,9 @@ interface Candidate {
 }
 
 const mockCandidates: Candidate[] = [
-  { id: '1', name: 'Rahul Kumar', room: '101', voteCount: 25, isWinner: true },
+  { id: '1', name: 'Arjun Reddy', room: '101', voteCount: 25, isWinner: true },
   { id: '2', name: 'Priya Sharma', room: '102', voteCount: 18, isWinner: false },
-  { id: '3', name: 'Amit Patel', room: '103', voteCount: 12, isWinner: false },
+  { id: '3', name: 'Vikram Iyer', room: '103', voteCount: 12, isWinner: false },
   { id: '4', name: 'Neha Singh', room: '104', voteCount: 8, isWinner: false },
 ]
 
@@ -43,8 +44,9 @@ export default function ElectionsPage() {
   const sortedCandidates = [...candidates].sort((a, b) => b.voteCount - a.voteCount)
 
   return (
-    <PageContainer title="Elections">
-      <div className="max-w-6xl mx-auto">
+    <ProtectedRoute>
+      <PageContainer title="Elections">
+        <div className="max-w-6xl mx-auto">
         {winner && (
           <div className="mb-10 bg-gradient-to-r from-[#F7B538] to-[#F59E0B] rounded-3xl p-8 shadow-lg border border-[#FCD34D]">
             <div className="flex items-center justify-center gap-3 mb-2">
@@ -134,7 +136,8 @@ export default function ElectionsPage() {
             </div>
           </div>
         </div>
-      </div>
-    </PageContainer>
+        </div>
+      </PageContainer>
+    </ProtectedRoute>
   )
 }

@@ -99,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCurrentRole('STUDENT')
     localStorage.removeItem('hostelhub_user')
     localStorage.removeItem('hostelhub_role')
+    // Redirect to signin will be handled by page component
   }
 
   const login = (user: User) => {

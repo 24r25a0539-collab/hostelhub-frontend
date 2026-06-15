@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { PageContainer } from '@/components/layout/PageContainer'
-import { RoleGuard } from '@/components/auth/RoleGuard'
-import { Plus, Minus, X } from 'lucide-react'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { Plus, Minus } from 'lucide-react'
 
 interface Transaction {
   id: string
@@ -85,7 +85,7 @@ export default function FundManagementPage() {
   }
 
   return (
-    <RoleGuard requiredRole="MAINTAINER">
+    <ProtectedRoute requiredRole="MAINTAINER">
       <PageContainer title="Fund Management">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
@@ -231,6 +231,6 @@ export default function FundManagementPage() {
           </div>
         </div>
       </PageContainer>
-    </RoleGuard>
+    </ProtectedRoute>
   )
 }
