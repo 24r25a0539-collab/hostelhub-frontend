@@ -66,32 +66,30 @@ const INITIAL_FUND_DATA: FundData = {
 }
 
 export function FundProvider({ children }: { children: ReactNode }) {
-  const [fundData, setFundData] = useState<FundData>(INITIAL_FUND_DATA)
+  // Initialize with computed data
+  const [fundData, setFundData] = useState<FundData>(() => {
+    const expensesTotal = INITIAL_FUND_DATA.expenses.reduce(
+      (sum, exp) => sum + exp.amount,
+      0,
+    )
+    return {
+      ...INITIAL_FUND_DATA,
+      expensesTotal,
+      currentBalance: INITIAL_FUND_DATA.totalFund - expensesTotal,
+    }
+  })
   const [isLoaded, setIsLoaded] = useState(false)
 
   // Initialize from localStorage on mount
   useEffect(() => {
-    const savedFund = localStorage.getItem('hostelhub_fund')
-
-    if (savedFund) {
-      try {
+    try {
+      const savedFund = localStorage.getItem('hostelhub_fund')
+      if (savedFund) {
         const data = JSON.parse(savedFund) as FundData
         setFundData(data)
-      } catch (e) {
-        setFundData(INITIAL_FUND_DATA)
       }
-    } else {
-      // Calculate initial balance
-      const expensesTotal = INITIAL_FUND_DATA.expenses.reduce(
-        (sum, exp) => sum + exp.amount,
-        0,
-      )
-      const initialData = {
-        ...INITIAL_FUND_DATA,
-        expensesTotal,
-        currentBalance: INITIAL_FUND_DATA.totalFund - expensesTotal,
-      }
-      setFundData(initialData)
+    } catch (e) {
+      // Silently fail and keep initial state
     }
     setIsLoaded(true)
   }, [])
