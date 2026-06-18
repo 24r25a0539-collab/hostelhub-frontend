@@ -43,11 +43,11 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/signin" className="px-4 py-2 text-[#111827] dark:text-white hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg transition-all">
+            <Link href="/login" className="px-4 py-2 text-[#111827] dark:text-white hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg transition-all">
               Sign In
             </Link>
-            <Link href="/join-hostel" className="px-4 py-2 bg-[#F7B538] text-[#1F2937] rounded-lg font-medium hover:bg-[#F59E0B] transition-all">
-              Join Hostel
+            <Link href="/signup" className="px-4 py-2 bg-[#F7B538] text-[#1F2937] rounded-lg font-medium hover:bg-[#F59E0B] transition-all">
+              Get Started
             </Link>
           </div>
         </div>
@@ -62,11 +62,11 @@ export default function LandingPage() {
           Streamline attendance, manage funds, handle cooking duties, and conduct elections all in one place.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/signin" className="px-8 py-4 bg-[#1F3A93] text-white rounded-lg font-semibold hover:bg-[#162952] transition-all flex items-center justify-center gap-2">
-            Sign In <ArrowRight size={20} />
+          <Link href="/signup" className="px-8 py-4 bg-[#1F3A93] text-white rounded-lg font-semibold hover:bg-[#162952] transition-all flex items-center justify-center gap-2">
+            Get Started <ArrowRight size={20} />
           </Link>
-          <Link href="/join-hostel" className="px-8 py-4 border-2 border-[#1F3A93] text-[#1F3A93] dark:text-[#F7B538] dark:border-[#F7B538] rounded-lg font-semibold hover:bg-[#1F3A93]/10 transition-all">
-            Create New Account
+          <Link href="/login" className="px-8 py-4 border-2 border-[#1F3A93] text-[#1F3A93] dark:text-[#F7B538] dark:border-[#F7B538] rounded-lg font-semibold hover:bg-[#1F3A93]/10 transition-all">
+            Sign In
           </Link>
         </div>
       </section>
@@ -107,12 +107,12 @@ export default function LandingPage() {
             <div className="p-4 bg-white dark:bg-[#1F2937] rounded-lg border border-[#E5E7EB] dark:border-[#374151]">
               <p className="font-semibold text-[#111827] dark:text-white mb-2">Maintainer Account</p>
               <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Email: john@example.com</p>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Password: demo@123</p>
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Password: Demo@123</p>
             </div>
             <div className="p-4 bg-white dark:bg-[#1F2937] rounded-lg border border-[#E5E7EB] dark:border-[#374151]">
               <p className="font-semibold text-[#111827] dark:text-white mb-2">Student Account</p>
               <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Email: jane@example.com</p>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Password: demo@123</p>
+              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">Password: Demo@123</p>
             </div>
           </div>
         </div>

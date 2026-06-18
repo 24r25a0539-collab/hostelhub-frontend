@@ -66,6 +66,7 @@ interface AuthContextType {
   signup: (input: SignupInput) => Promise<{ ok: boolean; error?: string }>
   logout: () => void
   updateUser: (patch: Partial<User>) => void
+  refreshUser: () => void
   // Internal helpers used by hostel context
   getStoredUsers: () => StoredUser[]
   persistUsers: (users: StoredUser[]) => void
@@ -271,6 +272,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCurrentUser(null)
   }, [])
 
+  // Re-read the current user from the persisted store (e.g. to pick up
+  // an approval/rejection made elsewhere).
+  const refreshUser = useCallback(() => {
+    setCurrentUser((prev) => {
+      if (!prev) return prev
+      const users = getStoredUsers()
+      const found = users.find((u) => u.id === prev.id)
+      return found ? stripPassword(found) : prev
+    })
+  }, [getStoredUsers])
+
   const updateUser = useCallback(
     (patch: Partial<User>) => {
       setCurrentUser((prev) => {
@@ -303,6 +315,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signup,
         logout,
         updateUser,
+        refreshUser,
         getStoredUsers,
         persistUsers,
       }}

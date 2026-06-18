@@ -33,8 +33,22 @@ export default function Dashboard() {
   const pendingRequestsCount = pendingRequests.length
 
   useEffect(() => {
-    if (!isLoading && !currentUser) {
-      router.push('/signin')
+    if (isLoading) return
+    if (!currentUser) {
+      router.push('/login')
+      return
+    }
+    // Gate users who have not finished onboarding
+    if (!currentUser.hostelId && currentUser.joinStatus === 'none') {
+      router.push('/onboarding')
+      return
+    }
+    if (currentUser.joinStatus === 'pending') {
+      router.push('/onboarding/pending')
+      return
+    }
+    if (currentUser.joinStatus === 'approved' && !currentUser.profileComplete) {
+      router.push('/profile/setup')
     }
   }, [currentUser, isLoading, router])
 
