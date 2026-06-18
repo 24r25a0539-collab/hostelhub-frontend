@@ -8,13 +8,13 @@ import { Users, Calendar, Utensils, Bus, Vote, FileText, CheckCircle, ArrowRight
 
 export default function LandingPage() {
   const router = useRouter()
-  const { currentUser, isLoading } = useAuth()
+  const { user, isLoading } = useAuth()
 
   useEffect(() => {
-    if (!isLoading && currentUser) {
+    if (!isLoading && user) {
       router.push('/dashboard')
     }
-  }, [currentUser, isLoading, router])
+  }, [user, isLoading, router])
 
   if (isLoading) {
     return (
@@ -24,7 +24,7 @@ export default function LandingPage() {
     )
   }
 
-  if (currentUser) {
+  if (user) {
     return null
   }
 
@@ -46,7 +46,7 @@ export default function LandingPage() {
             <Link href="/signin" className="px-4 py-2 text-[#111827] dark:text-white hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg transition-all">
               Sign In
             </Link>
-            <Link href="/join-hostel" className="px-4 py-2 bg-[#F7B538] text-[#1F2937] rounded-lg font-medium hover:bg-[#F59E0B] transition-all">
+            <Link href="/signup" className="px-4 py-2 bg-[#F7B538] text-[#1F2937] rounded-lg font-medium hover:bg-[#F59E0B] transition-all">
               Join Hostel
             </Link>
           </div>
@@ -65,7 +65,7 @@ export default function LandingPage() {
           <Link href="/signin" className="px-8 py-4 bg-[#1F3A93] text-white rounded-lg font-semibold hover:bg-[#162952] transition-all flex items-center justify-center gap-2">
             Sign In <ArrowRight size={20} />
           </Link>
-          <Link href="/join-hostel" className="px-8 py-4 border-2 border-[#1F3A93] text-[#1F3A93] dark:text-[#F7B538] dark:border-[#F7B538] rounded-lg font-semibold hover:bg-[#1F3A93]/10 transition-all">
+          <Link href="/signup" className="px-8 py-4 border-2 border-[#1F3A93] text-[#1F3A93] dark:text-[#F7B538] dark:border-[#F7B538] rounded-lg font-semibold hover:bg-[#1F3A93]/10 transition-all">
             Create New Account
           </Link>
         </div>

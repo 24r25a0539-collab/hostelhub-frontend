@@ -20,14 +20,12 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { useTheme } from '@/lib/theme-context'
 import { RoleSwitch } from '@/components/auth/RoleSwitch'
 
 const menuItems = [
   { label: 'Dashboard', href: '/', icon: BarChart3 },
   { label: 'Students', href: '/students', icon: Users },
   { label: 'Attendance', href: '/attendance', icon: Clock },
-  { label: 'Bus Pass', href: '/bus-pass', icon: Banknote },
   { label: 'Fund Management', href: '/fund-management', icon: Banknote },
   { label: 'Expenses', href: '/expenses', icon: Receipt },
   { label: 'Cooking Duties', href: '/cooking-duties', icon: UtensilsCrossed },
@@ -42,7 +40,6 @@ export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { logout } = useAuth()
-  const { isDarkMode } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
 
   const handleLogout = () => {
@@ -63,12 +60,12 @@ export function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 bg-white dark:bg-[#1F2937] text-[#111827] dark:text-white border-r border-[#E5E7EB] dark:border-[#374151] transition-transform duration-300 ${
+        className={`fixed left-0 top-0 h-screen w-64 bg-[#1F2937] text-white transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         {/* Logo */}
-        <div className="p-6 border-b border-[#E5E7EB] dark:border-[#374151]">
+        <div className="p-6 border-b border-[#374151]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#F7B538] rounded-lg flex items-center justify-center font-bold text-[#1F2937]">
               HH
@@ -93,10 +90,8 @@ export function Sidebar() {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-[#F7B538] text-[#1F2937] font-semibold dark:bg-[#F7B538] dark:text-[#1F2937]'
-                      : isDarkMode
-                        ? 'text-[#D1D5DB] dark:hover:bg-[#374151]'
-                        : 'text-[#6B7280] hover:bg-[#F5F7FA]'
+                      ? 'bg-[#F7B538] text-[#1F2937] font-semibold'
+                      : 'text-[#D1D5DB] hover:bg-[#374151]'
                   }`}
                 >
                   <Icon size={20} />
@@ -111,14 +106,10 @@ export function Sidebar() {
         <RoleSwitch />
 
         {/* Bottom actions */}
-        <div className="border-t border-[#E5E7EB] dark:border-[#374151] p-4 space-y-2">
+        <div className="border-t border-[#374151] p-4 space-y-2">
           <Link
             href="/settings"
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              isDarkMode
-                ? 'text-[#D1D5DB] hover:bg-[#374151]'
-                : 'text-[#6B7280] hover:bg-[#F5F7FA]'
-            }`}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#D1D5DB] hover:bg-[#374151] transition-all"
             onClick={() => setIsOpen(false)}
           >
             <Settings size={20} />
@@ -126,11 +117,7 @@ export function Sidebar() {
           </Link>
           <button
             onClick={handleLogout}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              isDarkMode
-                ? 'text-[#D1D5DB] hover:bg-[#374151]'
-                : 'text-[#6B7280] hover:bg-[#F5F7FA]'
-            }`}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#D1D5DB] hover:bg-[#374151] transition-all"
           >
             <LogOut size={20} />
             <span>Logout</span>

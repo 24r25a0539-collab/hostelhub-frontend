@@ -1,11 +1,9 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { useTheme } from '@/lib/theme-context'
 
 export function RoleSwitch() {
   const { currentUser, currentRole, canSwitchRole, switchRole } = useAuth()
-  const { isDarkMode } = useTheme()
 
   if (!currentUser) {
     return null
@@ -15,13 +13,9 @@ export function RoleSwitch() {
 
   if (!isElected) {
     return (
-      <div className="border-t border-[#E5E7EB] dark:border-[#374151] p-4">
-        <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mb-2">Viewing As</p>
-        <div className={`px-4 py-2 rounded-lg text-sm font-medium ${
-          isDarkMode
-            ? 'bg-[#374151] text-white'
-            : 'bg-[#F5F7FA] text-[#111827]'
-        }`}>
+      <div className="border-t border-[#374151] p-4">
+        <p className="text-xs text-[#9CA3AF] mb-2">Viewing As</p>
+        <div className="px-4 py-2 rounded-lg bg-[#374151] text-white text-sm font-medium">
           Student
         </div>
       </div>
@@ -29,14 +23,10 @@ export function RoleSwitch() {
   }
 
   return (
-    <div className="border-t border-[#E5E7EB] dark:border-[#374151] p-4">
-      <p className="text-xs text-[#6B7280] dark:text-[#9CA3AF] mb-3">Viewing As</p>
+    <div className="border-t border-[#374151] p-4">
+      <p className="text-xs text-[#9CA3AF] mb-3">Viewing As</p>
       <div className="space-y-2">
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-          isDarkMode
-            ? 'hover:bg-[#374151]'
-            : 'hover:bg-[#F5F7FA]'
-        }`}>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#374151] transition-colors cursor-pointer">
           <input
             type="radio"
             id="role-student"
@@ -48,20 +38,12 @@ export function RoleSwitch() {
           />
           <label
             htmlFor="role-student"
-            className={`flex-1 text-sm cursor-pointer ${
-              isDarkMode
-                ? 'text-[#D1D5DB]'
-                : 'text-[#6B7280]'
-            }`}
+            className="flex-1 text-sm text-[#D1D5DB] cursor-pointer"
           >
-            Student Mode
+            Student
           </label>
         </div>
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-          isDarkMode
-            ? 'hover:bg-[#374151]'
-            : 'hover:bg-[#F5F7FA]'
-        }`}>
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[#374151] transition-colors cursor-pointer">
           <input
             type="radio"
             id="role-maintainer"
@@ -73,13 +55,9 @@ export function RoleSwitch() {
           />
           <label
             htmlFor="role-maintainer"
-            className={`flex-1 text-sm cursor-pointer ${
-              isDarkMode
-                ? 'text-[#D1D5DB]'
-                : 'text-[#6B7280]'
-            }`}
+            className="flex-1 text-sm text-[#D1D5DB] cursor-pointer"
           >
-            Maintainer Mode
+            Maintainer
           </label>
         </div>
       </div>

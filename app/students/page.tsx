@@ -2,253 +2,189 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { PageContainer } from '@/components/layout/PageContainer'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { Plus, Edit2, Trash2, Eye, Mail, Phone, MapPin, X } from 'lucide-react'
-import { HOSTEL_STUDENTS, HostelStudent } from '@/lib/students-data'
+import { useRouter } from 'next/navigation'
+import { Search, Plus, MoreVertical, Download, CheckCircle, X } from 'lucide-react'
+import Link from 'next/link'
 
 export default function StudentsPage() {
-  const { currentRole } = useAuth()
-  const [students, setStudents] = useState<HostelStudent[]>(HOSTEL_STUDENTS)
-  const [selectedStudent, setSelectedStudent] = useState<HostelStudent | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [editingBacklogId, setEditingBacklogId] = useState<string | null>(null)
-  const [backlogInput, setBacklogInput] = useState<string>('')
-  const [toast, setToast] = useState('')
+  const { user } = useAuth()
+  const router = useRouter()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newStudent, setNewStudent] = useState({ name: '', email: '', phone: '', room: '' })
+  const [students, setStudents] = useState([
+    { id: '1', name: 'Rahul Kumar', email: 'rahul@example.com', phone: '+91 98765 43210', room: '101', joinDate: '2024-01-15', status: 'active' },
+    { id: '2', name: 'Priya Sharma', email: 'priya@example.com', phone: '+91 98765 43211', room: '102', joinDate: '2024-01-20', status: 'active' },
+    { id: '3', name: 'Amit Patel', email: 'amit@example.com', phone: '+91 98765 43212', room: '103', joinDate: '2024-02-01', status: 'active' },
+    { id: '4', name: 'Anjali Singh', email: 'anjali@example.com', phone: '+91 98765 43213', room: '104', joinDate: '2024-02-10', status: 'pending' },
+  ])
 
-  const deleteStudent = (id: string) => {
-    setStudents(students.filter(s => s.id !== id))
+  if (user?.role !== 'MAINTAINER') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#F9FAFB] to-[#F3F4F6] dark:from-[#111827] dark:to-[#1F2937]">
+        <div className="text-center">
+          <p className="text-[#6B7280]">Only maintainers can access this page</p>
+          <Link href="/dashboard" className="text-[#1F3A93] hover:underline mt-4 block">
+            Go back to dashboard
+          </Link>
+        </div>
+      </div>
+    )
   }
 
-  const handleUpdateBacklog = (studentId: string) => {
-    if (currentRole !== 'MAINTAINER') {
-      setToast('You are not the current maintainer.')
-      setTimeout(() => setToast(''), 3000)
-      return
-    }
+  const filteredStudents = students.filter(s =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.email.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
-    const backlogNum = parseInt(backlogInput)
-    if (isNaN(backlogNum) || backlogNum < 0) {
-      alert('Please enter a valid backlog count')
-      return
-    }
-
-    setStudents(
-      students.map(s =>
-        s.id === studentId ? { ...s, backlogCount: backlogNum } : s
-      )
-    )
-    setEditingBacklogId(null)
-    setBacklogInput('')
-
-    if (selectedStudent?.id === studentId) {
-      setSelectedStudent({ ...selectedStudent, backlogCount: backlogNum })
-    }
+  const handleAddStudent = () => {
+    if (!newStudent.name || !newStudent.email) return
+    setStudents([...students, { ...newStudent, id: Date.now().toString(), joinDate: new Date().toISOString().split('T')[0], status: 'active' }])
+    setNewStudent({ name: '', email: '', phone: '', room: '' })
+    setShowAddModal(false)
   }
 
   return (
-    <ProtectedRoute>
-      <PageContainer title="Student Management">
-      <div className="mb-6">
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="px-6 py-3 bg-[#F7B538] hover:bg-[#F59E0B] text-[#1F2937] font-semibold rounded-lg transition-all flex items-center gap-2"
-        >
-          <Plus size={20} />
-          Add Student
-        </button>
-      </div>
-
-      {selectedStudent && (
-        <div
-          className={`rounded-3xl p-8 shadow-sm border-2 mb-6 ${
-            selectedStudent.backlogCount === 0
-              ? 'bg-green-50 dark:bg-green-900/10 border-green-300 dark:border-green-700'
-              : 'bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-700'
-          }`}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-[#111827] dark:text-white">Student Details</h3>
+    <div className="min-h-screen bg-gradient-to-br from-[#F9FAFB] to-[#F3F4F6] dark:from-[#111827] dark:to-[#1F2937]">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-[#374151]">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#111827] dark:text-white">Students</h1>
+            <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF]">{students.length} total students</p>
+          </div>
+          <div className="flex gap-3">
+            <button className="px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg hover:bg-[#F5F7FA] dark:hover:bg-[#374151] flex items-center gap-2 text-sm font-medium text-[#111827] dark:text-white transition-all">
+              <Download className="w-4 h-4" /> Export
+            </button>
             <button
-              onClick={() => setSelectedStudent(null)}
-              className="p-1 hover:bg-[#F5F7FA] rounded-lg"
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2 bg-[#1F3A93] hover:bg-[#162952] text-white rounded-lg flex items-center gap-2 text-sm font-medium transition-all"
             >
-              <X size={20} />
+              <Plus className="w-4 h-4" /> Add Student
             </button>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Name</p>
-              <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedStudent.name}</p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Room Number</p>
-              <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedStudent.room}</p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Email</p>
-              <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedStudent.email}</p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Phone</p>
-              <p className="text-lg font-semibold text-[#111827] dark:text-white">{selectedStudent.phone}</p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Attendance Percentage</p>
-              <p className="text-lg font-semibold text-green-600 dark:text-green-400">{selectedStudent.attendance}%</p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Bus Pass Balance</p>
-              <p className="text-lg font-semibold text-[#111827] dark:text-white">₹{selectedStudent.busPassBalance}</p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Bus Pass Eligibility</p>
-              <p className={`text-lg font-semibold ${selectedStudent.busPassEligible ? 'text-green-600' : 'text-red-600'}`}>
-                {selectedStudent.busPassEligible ? 'Eligible' : 'Not Eligible'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-[#6B7280] dark:text-[#9CA3AF] mb-1">Backlog Status</p>
-              <p className={`text-lg font-semibold ${selectedStudent.backlogCount === 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {selectedStudent.backlogCount === 0 ? 'No Backlogs' : `Pending Backlogs`}
-              </p>
-            </div>
-          </div>
-
-          {/* Backlog Count Edit Section */}
-          <div className={`p-4 rounded-lg mb-6 ${
-            selectedStudent.backlogCount === 0 ? 'bg-white/50' : 'bg-white/50'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[#6B7280] mb-1">Backlog Count</p>
-                <p className={`text-2xl font-bold ${selectedStudent.backlogCount === 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {selectedStudent.backlogCount}
-                </p>
-              </div>
-              {editingBacklogId === selectedStudent.id ? (
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    value={backlogInput}
-                    onChange={e => setBacklogInput(e.target.value)}
-                    min="0"
-                    className="w-20 px-3 py-2 border border-[#E5E7EB] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1F3A93]"
-                    placeholder="0"
-                  />
-                  <button
-                    onClick={() => handleUpdateBacklog(selectedStudent.id)}
-                    className="px-4 py-2 bg-[#1F3A93] text-white rounded-lg hover:bg-[#162952] transition-all"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingBacklogId(null)
-                      setBacklogInput('')
-                    }}
-                    className="px-4 py-2 border border-[#E5E7EB] rounded-lg hover:bg-[#F5F7FA] transition-all"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : currentRole === 'MAINTAINER' ? (
-                <button
-                  onClick={() => {
-                    setEditingBacklogId(selectedStudent.id)
-                    setBacklogInput(selectedStudent.backlogCount.toString())
-                  }}
-                  className="px-4 py-2 bg-[#1F3A93] text-white rounded-lg hover:bg-[#162952] transition-all flex items-center gap-2"
-                >
-                  <Edit2 size={16} /> Edit
-                </button>
-              ) : null}
-            </div>
-          </div>
-
-        </div>
-      )}
-
-      {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 right-6 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-          {toast}
-        </div>
-      )}
-
-      <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-8 shadow-sm border border-[#E5E7EB] dark:border-[#374151]">
-        <h3 className="text-xl font-bold text-[#111827] dark:text-white mb-6">All Students ({students.length})</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[#E5E7EB] dark:border-[#374151]">
-                <th className="text-left py-3 px-4 font-semibold text-[#111827] dark:text-white">Name</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Room</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Attendance</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Bus Pass</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Backlogs</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Status</th>
-                <th className="text-center py-3 px-4 font-semibold text-[#111827] dark:text-white">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map(student => (
-                <tr
-                  key={student.id}
-                  className={`border-b transition-all ${
-                    student.backlogCount === 0
-                      ? 'border-green-200 hover:bg-green-50 dark:border-green-800 dark:hover:bg-green-900/20'
-                      : 'border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20'
-                  }`}
-                >
-                  <td className="py-3 px-4 text-[#111827] dark:text-white font-semibold">{student.name}</td>
-                  <td className="py-3 px-4 text-center text-[#6B7280] dark:text-[#9CA3AF]">{student.room}</td>
-                  <td className="py-3 px-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      student.attendance >= 90
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : student.attendance >= 75
-                        ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                      {student.attendance}%
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-center text-[#111827] dark:text-white font-semibold">₹{student.busPassBalance}</td>
-                  <td className="py-3 px-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      student.backlogCount === 0
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                      {student.backlogCount}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      student.backlogCount === 0
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                    }`}>
-                      {student.backlogCount === 0 ? 'No Backlogs' : 'Pending Backlogs'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    <button
-                      onClick={() => setSelectedStudent(student)}
-                      className="p-2 hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg transition-all inline-block"
-                    >
-                      <Eye size={18} className="text-[#6B7280] dark:text-[#9CA3AF]" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
-      </PageContainer>
-    </ProtectedRoute>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by name or email..."
+              className="w-full pl-12 pr-4 py-3 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#1F2937] text-[#111827] dark:text-white placeholder-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#F7B538]"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="bg-white dark:bg-[#1F2937] rounded-2xl shadow-sm border border-[#E5E7EB] dark:border-[#374151] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F9FAFB] dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-[#374151]">
+                <tr>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Name</th>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Email</th>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Phone</th>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Room</th>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Join Date</th>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Status</th>
+                  <th className="text-left px-6 py-4 font-semibold text-[#111827] dark:text-white text-sm">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredStudents.map((student) => (
+                  <tr key={student.id} className="border-b border-[#E5E7EB] dark:border-[#374151] hover:bg-[#F5F7FA] dark:hover:bg-[#374151] transition-colors">
+                    <td className="px-6 py-4 text-sm text-[#111827] dark:text-white font-medium">{student.name}</td>
+                    <td className="px-6 py-4 text-sm text-[#6B7280] dark:text-[#9CA3AF]">{student.email}</td>
+                    <td className="px-6 py-4 text-sm text-[#6B7280] dark:text-[#9CA3AF]">{student.phone}</td>
+                    <td className="px-6 py-4 text-sm text-[#6B7280] dark:text-[#9CA3AF]">{student.room || '-'}</td>
+                    <td className="px-6 py-4 text-sm text-[#6B7280] dark:text-[#9CA3AF]">{new Date(student.joinDate).toLocaleDateString()}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        student.status === 'active'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                      }`}>
+                        {student.status.charAt(0).toUpperCase() + student.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button className="p-2 hover:bg-[#E5E7EB] dark:hover:bg-[#374151] rounded-lg transition-all">
+                        <MoreVertical className="w-4 h-4 text-[#6B7280]" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-[#1F2937] rounded-2xl shadow-xl w-full max-w-md p-6 border border-[#E5E7EB] dark:border-[#374151]">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-[#111827] dark:text-white">Add New Student</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-[#F5F7FA] dark:hover:bg-[#374151] rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={newStudent.name}
+                onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })}
+                className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#111827] text-[#111827] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F7B538]"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                value={newStudent.email}
+                onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
+                className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#111827] text-[#111827] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F7B538]"
+              />
+              <input
+                type="tel"
+                placeholder="Phone"
+                value={newStudent.phone}
+                onChange={(e) => setNewStudent({ ...newStudent, phone: e.target.value })}
+                className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#111827] text-[#111827] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F7B538]"
+              />
+              <input
+                type="text"
+                placeholder="Room Number"
+                value={newStudent.room}
+                onChange={(e) => setNewStudent({ ...newStudent, room: e.target.value })}
+                className="w-full px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg bg-white dark:bg-[#111827] text-[#111827] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F7B538]"
+              />
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="flex-1 px-4 py-2 border border-[#E5E7EB] dark:border-[#374151] rounded-lg hover:bg-[#F5F7FA] dark:hover:bg-[#374151] text-[#111827] dark:text-white font-medium transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddStudent}
+                  className="flex-1 px-4 py-2 bg-[#1F3A93] hover:bg-[#162952] text-white rounded-lg font-medium transition-all flex items-center justify-center gap-2"
+                >
+                  <CheckCircle className="w-4 h-4" /> Add Student
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
