@@ -16,15 +16,15 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   useEffect(() => {
     if (!isLoading) {
-      // Redirect to signin if not authenticated
+      // Redirect to login if not authenticated
       if (!currentUser) {
-        router.push('/signin')
+        router.push('/login')
         return
       }
 
       // Check role if required
       if (requiredRole && currentRole !== requiredRole) {
-        router.push('/')
+        router.push('/dashboard')
         return
       }
     }
