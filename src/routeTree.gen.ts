@@ -9,33 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedVisitorsRouteImport } from './routes/_authenticated/visitors'
-import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
-import { Route as AuthenticatedQrRouteImport } from './routes/_authenticated/qr'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
-import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
-import { Route as AuthenticatedElectionsRouteImport } from './routes/_authenticated/elections'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedCookingRouteImport } from './routes/_authenticated/cooking'
-import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
-import { Route as AuthenticatedBuspassRouteImport } from './routes/_authenticated/buspass'
-import { Route as AuthenticatedAttendanceRouteImport } from './routes/_authenticated/attendance'
-import { Route as AuthenticatedAnnouncementsRouteImport } from './routes/_authenticated/announcements'
-import { Route as AuthenticatedAiInsightsRouteImport } from './routes/_authenticated/ai-insights'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppVisitorsRouteImport } from './routes/app.visitors'
+import { Route as AppStudentsRouteImport } from './routes/app.students'
+import { Route as AppReportsRouteImport } from './routes/app.reports'
+import { Route as AppPaymentsRouteImport } from './routes/app.payments'
+import { Route as AppExpensesRouteImport } from './routes/app.expenses'
+import { Route as AppElectionsRouteImport } from './routes/app.elections'
+import { Route as AppDutiesRouteImport } from './routes/app.duties'
+import { Route as AppDashboardRouteImport } from './routes/app.dashboard'
+import { Route as AppComplaintsRouteImport } from './routes/app.complaints'
+import { Route as AppBusPassRouteImport } from './routes/app.bus-pass'
+import { Route as AppAttendanceRouteImport } from './routes/app.attendance'
+import { Route as AppAnnouncementsRouteImport } from './routes/app.announcements'
+import { Route as AppAiInsightsRouteImport } from './routes/app.ai-insights'
 
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,235 +36,199 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedVisitorsRoute = AuthenticatedVisitorsRouteImport.update({
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVisitorsRoute = AppVisitorsRouteImport.update({
   id: '/visitors',
   path: '/visitors',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
+const AppStudentsRoute = AppStudentsRouteImport.update({
   id: '/students',
   path: '/students',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+const AppReportsRoute = AppReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedQrRoute = AuthenticatedQrRouteImport.update({
-  id: '/qr',
-  path: '/qr',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AppPaymentsRoute = AppPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedNotificationsRoute =
-  AuthenticatedNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
+const AppExpensesRoute = AppExpensesRouteImport.update({
   id: '/expenses',
   path: '/expenses',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedElectionsRoute = AuthenticatedElectionsRouteImport.update({
+const AppElectionsRoute = AppElectionsRouteImport.update({
   id: '/elections',
   path: '/elections',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+const AppDutiesRoute = AppDutiesRouteImport.update({
+  id: '/duties',
+  path: '/duties',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedCookingRoute = AuthenticatedCookingRouteImport.update({
-  id: '/cooking',
-  path: '/cooking',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
+const AppComplaintsRoute = AppComplaintsRouteImport.update({
   id: '/complaints',
   path: '/complaints',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedBuspassRoute = AuthenticatedBuspassRouteImport.update({
-  id: '/buspass',
-  path: '/buspass',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AppBusPassRoute = AppBusPassRouteImport.update({
+  id: '/bus-pass',
+  path: '/bus-pass',
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedAttendanceRoute = AuthenticatedAttendanceRouteImport.update({
+const AppAttendanceRoute = AppAttendanceRouteImport.update({
   id: '/attendance',
   path: '/attendance',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
-const AuthenticatedAnnouncementsRoute =
-  AuthenticatedAnnouncementsRouteImport.update({
-    id: '/announcements',
-    path: '/announcements',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAiInsightsRoute = AuthenticatedAiInsightsRouteImport.update({
+const AppAnnouncementsRoute = AppAnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAiInsightsRoute = AppAiInsightsRouteImport.update({
   id: '/ai-insights',
   path: '/ai-insights',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/ai-insights': typeof AuthenticatedAiInsightsRoute
-  '/announcements': typeof AuthenticatedAnnouncementsRoute
-  '/attendance': typeof AuthenticatedAttendanceRoute
-  '/buspass': typeof AuthenticatedBuspassRoute
-  '/complaints': typeof AuthenticatedComplaintsRoute
-  '/cooking': typeof AuthenticatedCookingRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/elections': typeof AuthenticatedElectionsRoute
-  '/expenses': typeof AuthenticatedExpensesRoute
-  '/notifications': typeof AuthenticatedNotificationsRoute
-  '/profile': typeof AuthenticatedProfileRoute
-  '/qr': typeof AuthenticatedQrRoute
-  '/reports': typeof AuthenticatedReportsRoute
-  '/settings': typeof AuthenticatedSettingsRoute
-  '/students': typeof AuthenticatedStudentsRoute
-  '/visitors': typeof AuthenticatedVisitorsRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/ai-insights': typeof AppAiInsightsRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/bus-pass': typeof AppBusPassRoute
+  '/app/complaints': typeof AppComplaintsRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/duties': typeof AppDutiesRoute
+  '/app/elections': typeof AppElectionsRoute
+  '/app/expenses': typeof AppExpensesRoute
+  '/app/payments': typeof AppPaymentsRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/visitors': typeof AppVisitorsRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/ai-insights': typeof AuthenticatedAiInsightsRoute
-  '/announcements': typeof AuthenticatedAnnouncementsRoute
-  '/attendance': typeof AuthenticatedAttendanceRoute
-  '/buspass': typeof AuthenticatedBuspassRoute
-  '/complaints': typeof AuthenticatedComplaintsRoute
-  '/cooking': typeof AuthenticatedCookingRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/elections': typeof AuthenticatedElectionsRoute
-  '/expenses': typeof AuthenticatedExpensesRoute
-  '/notifications': typeof AuthenticatedNotificationsRoute
-  '/profile': typeof AuthenticatedProfileRoute
-  '/qr': typeof AuthenticatedQrRoute
-  '/reports': typeof AuthenticatedReportsRoute
-  '/settings': typeof AuthenticatedSettingsRoute
-  '/students': typeof AuthenticatedStudentsRoute
-  '/visitors': typeof AuthenticatedVisitorsRoute
+  '/app/ai-insights': typeof AppAiInsightsRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/bus-pass': typeof AppBusPassRoute
+  '/app/complaints': typeof AppComplaintsRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/duties': typeof AppDutiesRoute
+  '/app/elections': typeof AppElectionsRoute
+  '/app/expenses': typeof AppExpensesRoute
+  '/app/payments': typeof AppPaymentsRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/visitors': typeof AppVisitorsRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/_authenticated/ai-insights': typeof AuthenticatedAiInsightsRoute
-  '/_authenticated/announcements': typeof AuthenticatedAnnouncementsRoute
-  '/_authenticated/attendance': typeof AuthenticatedAttendanceRoute
-  '/_authenticated/buspass': typeof AuthenticatedBuspassRoute
-  '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
-  '/_authenticated/cooking': typeof AuthenticatedCookingRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/elections': typeof AuthenticatedElectionsRoute
-  '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
-  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
-  '/_authenticated/profile': typeof AuthenticatedProfileRoute
-  '/_authenticated/qr': typeof AuthenticatedQrRoute
-  '/_authenticated/reports': typeof AuthenticatedReportsRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/students': typeof AuthenticatedStudentsRoute
-  '/_authenticated/visitors': typeof AuthenticatedVisitorsRoute
+  '/app': typeof AppRouteWithChildren
+  '/app/ai-insights': typeof AppAiInsightsRoute
+  '/app/announcements': typeof AppAnnouncementsRoute
+  '/app/attendance': typeof AppAttendanceRoute
+  '/app/bus-pass': typeof AppBusPassRoute
+  '/app/complaints': typeof AppComplaintsRoute
+  '/app/dashboard': typeof AppDashboardRoute
+  '/app/duties': typeof AppDutiesRoute
+  '/app/elections': typeof AppElectionsRoute
+  '/app/expenses': typeof AppExpensesRoute
+  '/app/payments': typeof AppPaymentsRoute
+  '/app/reports': typeof AppReportsRoute
+  '/app/students': typeof AppStudentsRoute
+  '/app/visitors': typeof AppVisitorsRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
-    | '/ai-insights'
-    | '/announcements'
-    | '/attendance'
-    | '/buspass'
-    | '/complaints'
-    | '/cooking'
-    | '/dashboard'
-    | '/elections'
-    | '/expenses'
-    | '/notifications'
-    | '/profile'
-    | '/qr'
-    | '/reports'
-    | '/settings'
-    | '/students'
-    | '/visitors'
+    | '/app'
+    | '/app/ai-insights'
+    | '/app/announcements'
+    | '/app/attendance'
+    | '/app/bus-pass'
+    | '/app/complaints'
+    | '/app/dashboard'
+    | '/app/duties'
+    | '/app/elections'
+    | '/app/expenses'
+    | '/app/payments'
+    | '/app/reports'
+    | '/app/students'
+    | '/app/visitors'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
-    | '/ai-insights'
-    | '/announcements'
-    | '/attendance'
-    | '/buspass'
-    | '/complaints'
-    | '/cooking'
-    | '/dashboard'
-    | '/elections'
-    | '/expenses'
-    | '/notifications'
-    | '/profile'
-    | '/qr'
-    | '/reports'
-    | '/settings'
-    | '/students'
-    | '/visitors'
+    | '/app/ai-insights'
+    | '/app/announcements'
+    | '/app/attendance'
+    | '/app/bus-pass'
+    | '/app/complaints'
+    | '/app/dashboard'
+    | '/app/duties'
+    | '/app/elections'
+    | '/app/expenses'
+    | '/app/payments'
+    | '/app/reports'
+    | '/app/students'
+    | '/app/visitors'
+    | '/app'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
-    | '/auth'
-    | '/_authenticated/ai-insights'
-    | '/_authenticated/announcements'
-    | '/_authenticated/attendance'
-    | '/_authenticated/buspass'
-    | '/_authenticated/complaints'
-    | '/_authenticated/cooking'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/elections'
-    | '/_authenticated/expenses'
-    | '/_authenticated/notifications'
-    | '/_authenticated/profile'
-    | '/_authenticated/qr'
-    | '/_authenticated/reports'
-    | '/_authenticated/settings'
-    | '/_authenticated/students'
-    | '/_authenticated/visitors'
+    | '/app'
+    | '/app/ai-insights'
+    | '/app/announcements'
+    | '/app/attendance'
+    | '/app/bus-pass'
+    | '/app/complaints'
+    | '/app/dashboard'
+    | '/app/duties'
+    | '/app/elections'
+    | '/app/expenses'
+    | '/app/payments'
+    | '/app/reports'
+    | '/app/students'
+    | '/app/visitors'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AppRoute: typeof AppRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -281,166 +238,146 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/visitors': {
-      id: '/_authenticated/visitors'
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/visitors': {
+      id: '/app/visitors'
       path: '/visitors'
-      fullPath: '/visitors'
-      preLoaderRoute: typeof AuthenticatedVisitorsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/visitors'
+      preLoaderRoute: typeof AppVisitorsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/students': {
-      id: '/_authenticated/students'
+    '/app/students': {
+      id: '/app/students'
       path: '/students'
-      fullPath: '/students'
-      preLoaderRoute: typeof AuthenticatedStudentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/students'
+      preLoaderRoute: typeof AppStudentsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/reports': {
-      id: '/_authenticated/reports'
+    '/app/reports': {
+      id: '/app/reports'
       path: '/reports'
-      fullPath: '/reports'
-      preLoaderRoute: typeof AuthenticatedReportsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/qr': {
-      id: '/_authenticated/qr'
-      path: '/qr'
-      fullPath: '/qr'
-      preLoaderRoute: typeof AuthenticatedQrRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/app/payments': {
+      id: '/app/payments'
+      path: '/payments'
+      fullPath: '/app/payments'
+      preLoaderRoute: typeof AppPaymentsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/notifications': {
-      id: '/_authenticated/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/expenses': {
-      id: '/_authenticated/expenses'
+    '/app/expenses': {
+      id: '/app/expenses'
       path: '/expenses'
-      fullPath: '/expenses'
-      preLoaderRoute: typeof AuthenticatedExpensesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/expenses'
+      preLoaderRoute: typeof AppExpensesRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/elections': {
-      id: '/_authenticated/elections'
+    '/app/elections': {
+      id: '/app/elections'
       path: '/elections'
-      fullPath: '/elections'
-      preLoaderRoute: typeof AuthenticatedElectionsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/elections'
+      preLoaderRoute: typeof AppElectionsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
+    '/app/duties': {
+      id: '/app/duties'
+      path: '/duties'
+      fullPath: '/app/duties'
+      preLoaderRoute: typeof AppDutiesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/dashboard': {
+      id: '/app/dashboard'
       path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/cooking': {
-      id: '/_authenticated/cooking'
-      path: '/cooking'
-      fullPath: '/cooking'
-      preLoaderRoute: typeof AuthenticatedCookingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/complaints': {
-      id: '/_authenticated/complaints'
+    '/app/complaints': {
+      id: '/app/complaints'
       path: '/complaints'
-      fullPath: '/complaints'
-      preLoaderRoute: typeof AuthenticatedComplaintsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/complaints'
+      preLoaderRoute: typeof AppComplaintsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/buspass': {
-      id: '/_authenticated/buspass'
-      path: '/buspass'
-      fullPath: '/buspass'
-      preLoaderRoute: typeof AuthenticatedBuspassRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/app/bus-pass': {
+      id: '/app/bus-pass'
+      path: '/bus-pass'
+      fullPath: '/app/bus-pass'
+      preLoaderRoute: typeof AppBusPassRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/attendance': {
-      id: '/_authenticated/attendance'
+    '/app/attendance': {
+      id: '/app/attendance'
       path: '/attendance'
-      fullPath: '/attendance'
-      preLoaderRoute: typeof AuthenticatedAttendanceRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/attendance'
+      preLoaderRoute: typeof AppAttendanceRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/announcements': {
-      id: '/_authenticated/announcements'
+    '/app/announcements': {
+      id: '/app/announcements'
       path: '/announcements'
-      fullPath: '/announcements'
-      preLoaderRoute: typeof AuthenticatedAnnouncementsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/announcements'
+      preLoaderRoute: typeof AppAnnouncementsRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_authenticated/ai-insights': {
-      id: '/_authenticated/ai-insights'
+    '/app/ai-insights': {
+      id: '/app/ai-insights'
       path: '/ai-insights'
-      fullPath: '/ai-insights'
-      preLoaderRoute: typeof AuthenticatedAiInsightsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      fullPath: '/app/ai-insights'
+      preLoaderRoute: typeof AppAiInsightsRouteImport
+      parentRoute: typeof AppRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAiInsightsRoute: typeof AuthenticatedAiInsightsRoute
-  AuthenticatedAnnouncementsRoute: typeof AuthenticatedAnnouncementsRoute
-  AuthenticatedAttendanceRoute: typeof AuthenticatedAttendanceRoute
-  AuthenticatedBuspassRoute: typeof AuthenticatedBuspassRoute
-  AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
-  AuthenticatedCookingRoute: typeof AuthenticatedCookingRoute
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedElectionsRoute: typeof AuthenticatedElectionsRoute
-  AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
-  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
-  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
-  AuthenticatedQrRoute: typeof AuthenticatedQrRoute
-  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
-  AuthenticatedVisitorsRoute: typeof AuthenticatedVisitorsRoute
+interface AppRouteChildren {
+  AppAiInsightsRoute: typeof AppAiInsightsRoute
+  AppAnnouncementsRoute: typeof AppAnnouncementsRoute
+  AppAttendanceRoute: typeof AppAttendanceRoute
+  AppBusPassRoute: typeof AppBusPassRoute
+  AppComplaintsRoute: typeof AppComplaintsRoute
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppDutiesRoute: typeof AppDutiesRoute
+  AppElectionsRoute: typeof AppElectionsRoute
+  AppExpensesRoute: typeof AppExpensesRoute
+  AppPaymentsRoute: typeof AppPaymentsRoute
+  AppReportsRoute: typeof AppReportsRoute
+  AppStudentsRoute: typeof AppStudentsRoute
+  AppVisitorsRoute: typeof AppVisitorsRoute
+  AppIndexRoute: typeof AppIndexRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAiInsightsRoute: AuthenticatedAiInsightsRoute,
-  AuthenticatedAnnouncementsRoute: AuthenticatedAnnouncementsRoute,
-  AuthenticatedAttendanceRoute: AuthenticatedAttendanceRoute,
-  AuthenticatedBuspassRoute: AuthenticatedBuspassRoute,
-  AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
-  AuthenticatedCookingRoute: AuthenticatedCookingRoute,
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedElectionsRoute: AuthenticatedElectionsRoute,
-  AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
-  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
-  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
-  AuthenticatedQrRoute: AuthenticatedQrRoute,
-  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
-  AuthenticatedVisitorsRoute: AuthenticatedVisitorsRoute,
+const AppRouteChildren: AppRouteChildren = {
+  AppAiInsightsRoute: AppAiInsightsRoute,
+  AppAnnouncementsRoute: AppAnnouncementsRoute,
+  AppAttendanceRoute: AppAttendanceRoute,
+  AppBusPassRoute: AppBusPassRoute,
+  AppComplaintsRoute: AppComplaintsRoute,
+  AppDashboardRoute: AppDashboardRoute,
+  AppDutiesRoute: AppDutiesRoute,
+  AppElectionsRoute: AppElectionsRoute,
+  AppExpensesRoute: AppExpensesRoute,
+  AppPaymentsRoute: AppPaymentsRoute,
+  AppReportsRoute: AppReportsRoute,
+  AppStudentsRoute: AppStudentsRoute,
+  AppVisitorsRoute: AppVisitorsRoute,
+  AppIndexRoute: AppIndexRoute,
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AppRoute: AppRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
